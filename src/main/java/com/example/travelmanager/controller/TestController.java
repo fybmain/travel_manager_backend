@@ -1,4 +1,4 @@
-package com.example.travelmanager;
+package com.example.travelmanager.controller;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -12,3 +12,4 @@ public class TestController {
         return "Test";
     }
 }
+
