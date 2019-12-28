@@ -1,9 +1,11 @@
 package com.example.travelmanager.controller;
 
 import com.example.travelmanager.dao.UserRepository;
-import com.example.travelmanager.entity.User;
+import com.example.travelmanager.service.auth.AuthException.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -11,21 +13,17 @@ public class TestController {
 
     @RequestMapping("/test")
     public String test() {
-        return "Test";
+
+        throw new UnauthorizedException();
     }
 
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping("/adduser")
-    public User addUser(@RequestParam String userName, @RequestParam String name)
+    @RequestMapping("/token")
+    public String addUser(@RequestParam String userName, @RequestParam String name)
     {
-        User u = new User();
-        u.setUserName(userName);
-        u.setName(name);
-        userRepository.save(u);
-
-        return u;
+        return "";
     }
 }
 
