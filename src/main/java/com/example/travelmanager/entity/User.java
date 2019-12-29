@@ -1,11 +1,10 @@
 package com.example.travelmanager.entity;
 
-import javax.annotation.Generated;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlID;
+
 
 @Entity
 public class User {
@@ -15,7 +14,7 @@ public class User {
 
     private String name;
 
-    private String userName;
+    private String username;
 
     public Integer getId() {
         return id;
@@ -33,11 +32,11 @@ public class User {
         this.name = name;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String email) {
-        this.userName = userName;
-    }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return "pass" ;}
 }
