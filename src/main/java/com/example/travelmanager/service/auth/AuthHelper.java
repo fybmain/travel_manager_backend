@@ -2,20 +2,39 @@ package com.example.travelmanager.service.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
-import com.example.travelmanager.service.auth.AuthException.UserInfo;
-
+import com.example.travelmanager.entity.User;
+import response.TokenResponse;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Date;
 
 public class AuthHelper {
     public UserInfo Authorize() {
         return new UserInfo();
     }
 
-    public static String generateToken(UserInfo userInfo){  // will use User entry when db designed
-        String json = JSON.toJSONString(userInfo);
+    public static TokenResponse generateTokenResponse(User user) {
+        UserInfo userInfo = new UserInfo(user);
+
+        Token token = new Token();
+        token.setId(user.getId());
+        token.setUserInfo(userInfo);
+        Date expire = new Date(new Date().getTime() + Constant.ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
+        token.setExpire(expire);
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setExpire(expire);
+        tokenResponse.setToken(generateToken(token));
+        tokenResponse.setUserInfo(userInfo);
+
+        return tokenResponse;
+    }
+
+    public static String generateToken(Token token){
+        String json = JSON.toJSONString(token);
+        System.out.println(json);
         return encrypt(json);
     }
 
