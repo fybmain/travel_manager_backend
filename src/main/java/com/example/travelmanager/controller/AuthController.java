@@ -1,11 +1,12 @@
 package com.example.travelmanager.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
+import com.example.travelmanager.enums.RegisterErrorEnum;
+import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
-import com.example.travelmanager.service.auth.AuthHelper;
 import com.example.travelmanager.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import response.TokenResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,18 +30,22 @@ public class AuthController {
     @PostMapping("/token")
     public HttpEntity GetToken(@RequestBody LoginPayload loginPayload) {
         User user = userDao.findByWorkId(loginPayload.getWorkid());
-        System.out.println(JSON.toJSONString(user));
-        if (user == null) {
-            return ResponseEntity.badRequest().build();
-        }
         if (user == null || !user.validPassword(loginPayload.getPassword())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(AuthHelper.generateTokenResponse(user));
+        TokenResponse token = authService.generateTokenResponse(user);
+        return ResponseEntity.ok(ResultBean.success(token));
     }
 
     @PostMapping("/register")
     public HttpEntity Register(@RequestBody RegisterPayload registerPayload) {
-        return authService.register(registerPayload);
+
+        authService.authorize(token, UserRoleEnum.Employee, UserRoleEnum.)
+
+        RegisterErrorEnum result = authService.register(registerPayload);
+        if (result == RegisterErrorEnum.WORKIDEXIST) {
+            return ResponseEntity.badRequest().body(ResultBean.error(result.getCode(), result.getMsg()));
+        }
+        return ResponseEntity.ok(ResultBean.error(result.getCode(), result.getMsg()));
     }
 }
