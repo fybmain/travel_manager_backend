@@ -4,7 +4,6 @@ import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.RegisterErrorEnum;
-import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.service.auth.AuthService;
@@ -34,18 +33,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         TokenResponse token = authService.generateTokenResponse(user);
-        return ResponseEntity.ok(ResultBean.success(token));
+        return ResultBean.success(token);
     }
 
     @PostMapping("/register")
     public HttpEntity Register(@RequestBody RegisterPayload registerPayload) {
 
-        authService.authorize(token, UserRoleEnum.Employee, UserRoleEnum.)
 
         RegisterErrorEnum result = authService.register(registerPayload);
         if (result == RegisterErrorEnum.WORKIDEXIST) {
-            return ResponseEntity.badRequest().body(ResultBean.error(result.getCode(), result.getMsg()));
+            return ResultBean.error(HttpStatus.BAD_REQUEST, result.getCode(), result.getMsg());
         }
-        return ResponseEntity.ok(ResultBean.error(result.getCode(), result.getMsg()));
+        return ResultBean.success();
     }
 }

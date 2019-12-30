@@ -17,6 +17,7 @@ import response.TokenResponse;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Service
@@ -29,10 +30,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public int authorize(String tokenString, UserRoleEnum... userRoleEnums) {
         Token token = decryptToken(tokenString);
-        if (token == null) {
+        Date now = new Date();
+        if (token == null || now.after(token.getExpire())) {
             throw new UnauthorizedException();
         }
-
+        System.out.println(JSON.toJSONString(token));
         UserInfo userInfo = token.getUserInfo();
         int roleId = userInfo.getRole();
         for (UserRoleEnum role: userRoleEnums) {
@@ -81,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static Token decryptToken(String tokenStr) {
         String text = decrypt(tokenStr);
+        System.out.println(text);
         if (text == null) {
             return null;
         }
@@ -95,11 +98,12 @@ public class AuthServiceImpl implements AuthService {
 
     private static String encrypt(String text) {
         try{
+            Base64.Encoder encoder = Base64.getEncoder();
             Key aesKey = new SecretKeySpec(Constant.SIGNING_KEY.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, aesKey);
             byte[] encrypted = cipher.doFinal(text.getBytes());
-            return parseByte2HexStr(encrypted);
+            return encoder.encodeToString(encrypted);
         }
         catch (Exception e){
             System.err.println(e.toString());
@@ -108,13 +112,14 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    private static String decrypt(String text){
+    private static String decrypt(String encodeText){
         try{
+            Base64.Decoder decoder = Base64.getDecoder();
+            String text = new String(decoder.decode(encodeText));
             Key aesKey = new SecretKeySpec(Constant.SIGNING_KEY.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey);
-            String decrypted = new String(cipher.doFinal(parseHexStr2Byte(text)));
-            return decrypted;
+            return new String(cipher.doFinal(decoder.decode(encodeText)));
         }
         catch (Exception e){
             System.err.println(e.toString());
