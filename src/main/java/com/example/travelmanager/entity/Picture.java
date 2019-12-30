@@ -3,6 +3,9 @@ package com.example.travelmanager.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 @Entity
@@ -46,4 +49,7 @@ public class Picture {
         this.uploadTime = uploadTime;
     }
 
+    public void setUploadTime() {
+        this.uploadTime = new Date(Calendar.getInstance().getTimeInMillis());
+    }
 }

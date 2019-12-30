@@ -3,6 +3,8 @@ package com.example.travelmanager.service.image;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.aliyun.oss.model.ObjectListing;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,14 +16,20 @@ import java.io.IOException;
 @Component
 public class OSSUtil {
 
-    @Autowired
-    private OSSConfig ossConfig;
+    @Getter @Setter
+    private static String endpoint = "oss-cn-hangzhou.aliyuncs.com";
+    @Getter @Setter
+    private static String accessKeyId = "LTAI4FvSuXnyoFnrXnY16aGx";
+    @Getter @Setter
+    private static String accessKeySecret = "Sb2TxAdGWuX6sX5x63nrjhdxPV1PeB";
+    @Getter @Setter
+    private static String bucketName = "picturesbed";
 
     public static OSSUtil ossUtil;
 
     //获取OSSClient实例
     private static OSSClient getOSSClient(){
-        OSSClient ossClient = new OSSClient(ossUtil.ossConfig.getEndpoint(), ossUtil.ossConfig.getAccessKeyId(), ossUtil.ossConfig.getAccessKeySecret());
+        OSSClient ossClient = new OSSClient(getEndpoint(), getAccessKeyId(), getAccessKeySecret());
         return ossClient;
     }
 
@@ -30,7 +38,7 @@ public class OSSUtil {
         OSSClient ossClient = getOSSClient();
         // 上传文件流
         //InputStream inputStream = new FileInputStream(fileName);
-        ossClient.putObject(ossUtil.ossConfig.getBucketName(), key , file);
+        ossClient.putObject(getBucketName(), key , file);
         // 关闭client
         ossClient.shutdown();
     }
@@ -38,7 +46,7 @@ public class OSSUtil {
     // MultipartFile方式上传
     public static String uploadPic(MultipartFile file, String key) throws IOException {
         OSSClient ossClient = getOSSClient();
-        ossClient.putObject(ossUtil.ossConfig.getBucketName(), key , file.getInputStream());
+        ossClient.putObject(getBucketName(), key , file.getInputStream());
         ossClient.shutdown();
         return key;
     }
@@ -48,7 +56,7 @@ public class OSSUtil {
         // 创建OSSClient实例
         OSSClient ossClient = getOSSClient();
         // 删除Object
-        ossClient.deleteObject(ossUtil.ossConfig.getBucketName(), key);
+        ossClient.deleteObject(getBucketName(), key);
         // 关闭client
         ossClient.shutdown();
 
@@ -58,7 +66,7 @@ public class OSSUtil {
     public static void listObject(){
         OSSClient ossClient = getOSSClient();
         // 获取指定bucket下的所有Object信息
-        ObjectListing listing = ossClient.listObjects(ossUtil.ossConfig.getBucketName());
+        ObjectListing listing = ossClient.listObjects(getBucketName());
 
         // 遍历所有Object
         for (OSSObjectSummary objectSummary : listing.getObjectSummaries()) {
