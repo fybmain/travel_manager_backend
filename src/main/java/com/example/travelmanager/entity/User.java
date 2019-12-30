@@ -45,8 +45,6 @@ public class User {
 
     /****** Methods ******/
     public boolean validPassword(String password) {
-        System.out.println(this.passwordHash);
-        System.out.println(CommonHelper.MD5Encode(password));
         return this.passwordHash.equals(CommonHelper.MD5Encode(password));
     }
 
@@ -74,7 +72,9 @@ public class User {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) { }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
     public Integer getDepartmentId() {
         return departmentId;
