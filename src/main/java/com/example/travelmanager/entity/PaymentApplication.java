@@ -32,7 +32,7 @@ public class PaymentApplication {
     @NotNull
     private Integer travelId;
 
-    // ["https://www.baidu.com", "https://www.google.com"]
+    // "https://www.baidu.com https://www.google.com"
     private String invoiceURLs;
 
     private float hotelPayment;
