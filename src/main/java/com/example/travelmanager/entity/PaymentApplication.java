@@ -2,11 +2,13 @@ package com.example.travelmanager.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Data
 @Entity
 public class PaymentApplication {
     @Id
