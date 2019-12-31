@@ -1,10 +1,8 @@
 package com.example.travelmanager.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Column;
+import com.example.travelmanager.service.CommonHelper;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 
@@ -46,6 +44,14 @@ public class User {
 
 
     /****** Methods ******/
+    public boolean validPassword(String password) {
+        return this.passwordHash.equals(CommonHelper.MD5Encode(password));
+    }
+
+    public void setPassword(String password){
+        this.passwordHash = CommonHelper.MD5Encode(password);
+    }
+
     public Integer getId() {
         return id;
     }

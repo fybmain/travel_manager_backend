@@ -1,23 +1,24 @@
-package com.example.travelmanager.service.auth;
+package response;
 
+import com.example.travelmanager.service.auth.UserInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-public class Token {
-    private int id;
+public class TokenResponse {
+    private String token;
 
     private UserInfo userInfo;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date expire;
 
-    public int getId() {
-        return id;
+    public String getToken() {
+        return token;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public UserInfo getUserInfo() {
