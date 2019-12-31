@@ -98,8 +98,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
         User applicant = userDao.findById(paymentApplication.getApplicantId()).get();
 
-        System.out.println(JSON.toJSONString(travelApplicationDao.findById(paymentApplication.getTravelId())));
-
         // 找到对应Travel
         if(travelApplicationDao.findById(paymentApplication.getTravelId()).isEmpty()) {
             throw PaymentControllerException.TravelApplicationNotFoundException;
