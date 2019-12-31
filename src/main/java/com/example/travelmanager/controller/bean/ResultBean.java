@@ -1,5 +1,6 @@
 package com.example.travelmanager.controller.bean;
 
+import com.example.travelmanager.config.WebException.ErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -19,6 +20,14 @@ public class ResultBean<T> {
         resultBean.setMessage(message);
 
         return ResponseEntity.status(httpStatus).body(resultBean);
+    }
+
+    public static ResponseEntity error(ErrorException errorException) {
+        ResultBean resultBean = new ResultBean();
+        resultBean.setCode(errorException.getCode());
+        resultBean.setMessage(errorException.getMessage());
+
+        return ResponseEntity.status(errorException.getHttpStatus()).body(resultBean);
     }
 
     public static ResponseEntity success() {
