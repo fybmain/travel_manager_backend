@@ -1,5 +1,6 @@
 package com.example.travelmanager.service.payment;
 
+import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.WebException.ErrorException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.dao.PaymentApplicationDao;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 
-// TODO: add exception for some condition
 // TravelApplicationException 出差申请不存在
 @Service
 @Slf4j
@@ -98,6 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         User applicant = userDao.findById(paymentApplication.getApplicantId()).get();
 
+        System.out.println(JSON.toJSONString(travelApplicationDao.findById(paymentApplication.getTravelId())));
 
         // 找到对应Travel
         if(travelApplicationDao.findById(paymentApplication.getTravelId()).isEmpty()) {

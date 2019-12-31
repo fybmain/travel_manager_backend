@@ -1,5 +1,7 @@
 package com.example.travelmanager.controller;
 
+
+import com.example.travelmanager.config.WebException.BadRequestException;
 import com.example.travelmanager.config.WebException.ForbiddenException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.config.WebException.UnauthorizedException;
@@ -8,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,7 +25,7 @@ public class WebExceptionHandler {
     public ResponseEntity unknownExceptionHandler(Exception e) {
         logger.error("发生了未知异常", e);
         // 发送邮件通知技术人员.
-        return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, "未知错误");
+        return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, e.getMessage());
     }
 
     @ExceptionHandler
@@ -34,26 +38,38 @@ public class WebExceptionHandler {
         return ResultBean.error(HttpStatus.FORBIDDEN, 403, "禁止访问");
     }
 
+
     // PaymentControllerExceptions
     @ExceptionHandler
     public ResponseEntity TravelApplicationNotFoundHandler(PaymentControllerException e) {
-        if(e.getCode() == PaymentControllerException.TravelApplicationNotFound) {
+        if (e.getCode() == PaymentControllerException.TravelApplicationNotFound) {
             return ResultBean.error(e);
-        }
-        else if(e.getCode() == PaymentControllerException.PaymentApplicationNotFound) {
+        } else if (e.getCode() == PaymentControllerException.PaymentApplicationNotFound) {
             return ResultBean.error(e);
-        }
-        else if(e.getCode() == PaymentControllerException.UserNotFound) {
+        } else if (e.getCode() == PaymentControllerException.UserNotFound) {
             return ResultBean.error(e);
-        }
-        else if(e.getCode() == PaymentControllerException.ImageUploadFailed) {
+        } else if (e.getCode() == PaymentControllerException.ImageUploadFailed) {
             return ResultBean.error(e);
-        }
-        else if(e.getCode() == PaymentControllerException.ImageGetFailed) {
+        } else if (e.getCode() == PaymentControllerException.ImageGetFailed) {
             return ResultBean.error(e);
         }
 
         return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, "未知错误");
+    }
+
+    @ExceptionHandler
+    public ResponseEntity HttpRequestMethodNotSupportedExceptionHandler(HttpRequestMethodNotSupportedException e) {
+        return ResultBean.error(HttpStatus.METHOD_NOT_ALLOWED, 405, "method not allowed");
+    }
+
+    @ExceptionHandler
+    public ResponseEntity BadRequestExceptionHandler (BadRequestException e) {
+        return ResultBean.error(HttpStatus.BAD_REQUEST, e.getErrCode(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        return ResultBean.error(HttpStatus.BAD_REQUEST, 400, e.getMessage());
     }
 }
 

@@ -1,6 +1,5 @@
 package com.example.travelmanager.entity;
 
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,11 +36,11 @@ public class TravelApplication {
     // 2019-01-01
     @Column(nullable = false)
     @NotNull
-    private String startTime;
+    private Date startTime;
 
     @Column(nullable = false)
     @NotNull
-    private String endTime;
+    private Date endTime;
 
     private String province;
 
@@ -108,19 +107,19 @@ public class TravelApplication {
         this.paid = paid;
     }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public String getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
