@@ -7,10 +7,12 @@ import com.example.travelmanager.enums.RegisterErrorEnum;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.service.auth.AuthService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,19 +29,27 @@ public class AuthController {
     private UserDao userDao;
 
     @PostMapping("/token")
+    @ApiOperation(value = "get token", response = ResultBean.class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
+            @ApiResponse(code = 401, message = "username or password incorrect", response = ResultBean.class)
+    })
     public HttpEntity GetToken(@RequestBody LoginPayload loginPayload) {
         User user = userDao.findByWorkId(loginPayload.getWorkid());
         if (user == null || !user.validPassword(loginPayload.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResultBean.error(HttpStatus.UNAUTHORIZED, 401, "username or password incorrect");
         }
         TokenResponse token = authService.generateTokenResponse(user);
         return ResultBean.success(token);
     }
 
     @PostMapping("/register")
+    @ApiOperation(value = "register a new user", response = ResultBean.class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "code = 0 msg = success", response = ResultBean.class),
+            @ApiResponse(code = 400, message = "code = 1 msg = work id exists", response = ResultBean.class)
+    })
     public HttpEntity Register(@RequestBody RegisterPayload registerPayload) {
-
-
         RegisterErrorEnum result = authService.register(registerPayload);
         if (result == RegisterErrorEnum.WORKIDEXIST) {
             return ResultBean.error(HttpStatus.BAD_REQUEST, result.getCode(), result.getMsg());
