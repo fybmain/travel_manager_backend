@@ -10,6 +10,7 @@ import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.payment.PaymentService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class PaymentApplicationController {
         // 2. create PaymentApplication in database
         PaymentApplication paymentApplication = paymentService.createByPayload(paymentApplicationPayload, userId);
 
-        return ResultBean.success();
+
+        return ResultBean.success(HttpStatus.CREATED);
     }
 }

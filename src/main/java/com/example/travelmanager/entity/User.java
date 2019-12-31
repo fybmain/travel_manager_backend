@@ -1,11 +1,13 @@
 package com.example.travelmanager.entity;
 
 import com.example.travelmanager.service.CommonHelper;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 
+@Data
 @Entity
 public class User {
     @Id

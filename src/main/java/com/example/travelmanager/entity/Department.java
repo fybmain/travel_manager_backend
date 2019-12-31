@@ -1,9 +1,12 @@
 package com.example.travelmanager.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 
+@Data
 @Entity
 public class Department {
     @Id
