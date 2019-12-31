@@ -4,7 +4,7 @@ import io.swagger.models.auth.In;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 public class PaymentApplication {

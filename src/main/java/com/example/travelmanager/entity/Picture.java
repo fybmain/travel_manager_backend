@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-
 @Entity
 public class Picture {
     @Id
@@ -46,4 +45,9 @@ public class Picture {
         this.uploadTime = uploadTime;
     }
 
+    public void setUploadTime() {
+        // 这样只有日期
+        //this.uploadTime = new Date(Calendar.getInstance().getTimeInMillis());
+        this.uploadTime = new java.util.Date();
+    }
 }
