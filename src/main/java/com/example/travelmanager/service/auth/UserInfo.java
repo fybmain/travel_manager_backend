@@ -1,16 +1,23 @@
 package com.example.travelmanager.service.auth;
 
 import com.example.travelmanager.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 
 public class UserInfo {
+    @Getter @Setter
     private String name;
 
+    @Getter @Setter
     private String email;
 
+    @Getter @Setter
     private String telephone;
 
+    @Getter @Setter
     private Integer role;
 
+    @Getter @Setter
     private Integer departmentId;
 
     public UserInfo() { }
@@ -21,45 +28,5 @@ public class UserInfo {
         this.telephone = user.getTelephone();
         this.role = user.getRole();
         this.departmentId = user.getDepartmentId();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public Integer getRole() {
-        return role;
-    }
-
-    public void setRole(Integer role) {
-        this.role = role;
-    }
-
-    public Integer getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
     }
 }
