@@ -47,9 +47,16 @@ public class ImageUploader {
         Integer salt = timeHashName.hashCode();
         String saltString = salt.toString();
 
-        Integer oriInteger = oriName.hashCode();
-        String oriHash = oriInteger.toString();
+        String oriHashName;
 
-        return timeHashName + saltString + oriHash;
+        Integer oriInteger = oriName.hashCode();
+        if(oriInteger < 0) {
+            Integer negInt = (-hashCode);
+            oriHashName = "0" + negInt.toString();
+        } else {
+            oriHashName = oriInteger.toString();
+        }
+
+        return timeHashName + saltString + oriHashName;
     }
 }
