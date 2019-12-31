@@ -46,7 +46,7 @@ public class AuthController {
     @PostMapping("/register")
     @ApiOperation(value = "register a new user", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "{code=0,msg=success}", response = ResultBean.class),
+            @ApiResponse(code = 201, message = "{code=0,msg=success}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=1,msg='work id exists'}", response = ResultBean.class)
     })
     public HttpEntity Register(@RequestBody RegisterPayload registerPayload) {
@@ -54,6 +54,6 @@ public class AuthController {
         if (result == RegisterErrorEnum.WORKIDEXIST) {
             return ResultBean.error(HttpStatus.BAD_REQUEST, result.getCode(), result.getMsg());
         }
-        return ResultBean.success();
+        return ResultBean.success(HttpStatus.CREATED);
     }
 }
