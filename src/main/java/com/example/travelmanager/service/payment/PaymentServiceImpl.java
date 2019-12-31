@@ -1,5 +1,7 @@
 package com.example.travelmanager.service.payment;
 
+import com.example.travelmanager.config.WebException.ErrorException;
+import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.dao.PaymentApplicationDao;
 import com.example.travelmanager.dao.PictureDao;
 import com.example.travelmanager.dao.TravelApplicationDao;
@@ -11,11 +13,11 @@ import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.PaymentApplicationPayload;
+import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -55,8 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentApplication.setTravelId(payload.getTravelApplyId());
         if (travelApplicationDao.findById(payload.getTravelApplyId()).isEmpty()) {
-            // TODO@@
-            throw new Exception();
+            throw PaymentControllerException.TravelApplicationNotFoundException;
         }
 
 
@@ -83,5 +84,48 @@ public class PaymentServiceImpl implements PaymentService {
         paymentApplicationDao.save(paymentApplication);
 
         return paymentApplication;
+    }
+
+    public PaymentApplicationResponse getById(Integer Id) throws Exception {
+        if(paymentApplicationDao.findById(Id).isEmpty()) {
+            throw PaymentControllerException.PaymentApplicationNotFoundException;
+        }
+        PaymentApplication paymentApplication = paymentApplicationDao.findById(Id).get();
+
+        // 找到对应用户
+        if(userDao.findById(paymentApplication.getApplicantId()).isEmpty()) {
+            throw PaymentControllerException.UserNotFoundException;
+        }
+        User applicant = userDao.findById(paymentApplication.getApplicantId()).get();
+
+
+        // 找到对应Travel
+        if(travelApplicationDao.findById(paymentApplication.getTravelId()).isEmpty()) {
+            throw PaymentControllerException.TravelApplicationNotFoundException;
+        }
+        TravelApplication travelApplication = travelApplicationDao.findById(paymentApplication.getTravelId()).get();
+
+        PaymentApplicationResponse response = new PaymentApplicationResponse();
+        response.setPayment(new PaymentApplicationResponse.Payment());
+        response.setBudget(new PaymentApplicationResponse.Budget());
+
+        response.setApplicant(applicant.getName());
+
+        response.setPictureURLs(paymentApplication.getInvoiceURLs());
+
+        response.setTravelApplyId(paymentApplication.getTravelId());
+
+
+        response.getPayment().setFood(paymentApplication.getFoodPayment());
+        response.getPayment().setHotel(paymentApplication.getHotelPayment());
+        response.getPayment().setOther(paymentApplication.getOtherPayment());
+        response.getPayment().setVehicle(paymentApplication.getVehiclePayment());
+
+        response.getBudget().setFood(travelApplication.getFoodBudget());
+        response.getBudget().setHotel(travelApplication.getHotelBudget());
+        response.getBudget().setOther(travelApplication.getHotelBudget());
+        response.getBudget().setVehicle(travelApplication.getVehicleBudget());
+
+        return response;
     }
 }
