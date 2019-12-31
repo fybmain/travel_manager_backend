@@ -2,11 +2,7 @@ package com.example.travelmanager.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
+import java.util.Date;
 
 @Entity
 public class Picture {
@@ -50,6 +46,8 @@ public class Picture {
     }
 
     public void setUploadTime() {
-        this.uploadTime = new Date(Calendar.getInstance().getTimeInMillis());
+        // 这样只有日期
+        //this.uploadTime = new Date(Calendar.getInstance().getTimeInMillis());
+        this.uploadTime = new java.util.Date();
     }
 }
