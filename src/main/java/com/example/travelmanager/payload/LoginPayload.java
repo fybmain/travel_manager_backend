@@ -1,22 +1,25 @@
 package com.example.travelmanager.payload;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+
+@Data
 public class LoginPayload {
-    private String workid;
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "workId should not be null")
+    private String workId;
+
+    @Setter
+    @Getter
+    @ApiModelProperty
+    @NotBlank(message = "password should not be null")
     private String password;
 
-    public String getWorkid() {
-        return workid;
-    }
 
-    public void setWorkid(String workid) {
-        this.workid = workid;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
