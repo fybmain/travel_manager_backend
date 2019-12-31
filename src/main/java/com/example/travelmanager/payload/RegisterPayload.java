@@ -1,53 +1,41 @@
 package com.example.travelmanager.payload;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+
+@Data
 public class RegisterPayload {
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "name should not be null")
     private String name;
 
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "password should not be null")
     private String password;
 
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "workId should not be null")
     private String workId;
 
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "telephone should not be null")
     private String telephone;
 
+    @Getter
+    @Setter
+    @ApiModelProperty
+    @NotBlank(message = "email should not be null")
     private String email;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getWorkId() {
-        return workId;
-    }
-
-    public void setWorkId(String workId) {
-        this.workId = workId;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
