@@ -76,13 +76,13 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
     private HashSet<Integer>getStatusSet(String state) {
         if (state.equalsIgnoreCase("all")){
-            return Constant.TRAVEL_APPLICATION_ALL;
+            return Constant.APPLICATION_ALL_STATE;
         }
         else if (state.equalsIgnoreCase("finished")) {
-            return Constant.TRAVEL_APPLICATION_FINISHED;
+            return Constant.APPLICATION_FINISHED_STATE;
         }
         else if (state.equalsIgnoreCase("unfinished")) {
-            return Constant.TRAVEL_APPLICATION_UNFINISHED;
+            return Constant.APPLICATION_UNFINISHED_STATE;
         }
         else {
             throw TravelControllerException.GetApplicationsStateErrorException;

@@ -11,16 +11,16 @@ public class Constant {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
 
-    public static final HashSet<Integer> TRAVEL_APPLICATION_UNFINISHED = new HashSet<Integer>(Arrays.asList(
+    public static final HashSet<Integer> APPLICATION_UNFINISHED_STATE = new HashSet<Integer>(Arrays.asList(
             ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus(),
             ApplicationStatusEnum.NeedManagerApprove.getStatus())
     );
 
-    public static final HashSet<Integer> TRAVEL_APPLICATION_FINISHED = new HashSet<Integer>(Arrays.asList(
+    public static final HashSet<Integer> APPLICATION_FINISHED_STATE = new HashSet<Integer>(Arrays.asList(
             ApplicationStatusEnum.ApplicationApproved.getStatus(),
             ApplicationStatusEnum.ApplicationNotApproved.getStatus()
     ));
-    public static final HashSet<Integer> TRAVEL_APPLICATION_ALL = new HashSet<Integer>(Arrays.asList(
+    public static final HashSet<Integer> APPLICATION_ALL_STATE = new HashSet<Integer>(Arrays.asList(
             ApplicationStatusEnum.ApplicationNotApproved.getStatus(),
             ApplicationStatusEnum.ApplicationApproved.getStatus(),
             ApplicationStatusEnum.NeedManagerApprove.getStatus(),
