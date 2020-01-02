@@ -70,7 +70,7 @@ public class TravelApplicationController {
             @RequestHeader(Constant.HEADER_STRING) String auth,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
-            @ApiParam(value = ("all, finished, unfinished"))  @RequestParam(defaultValue = "All") String state
+            @ApiParam(value = "all, finished, unfinished")  @RequestParam(defaultValue = "All") String state
     ) {
         int uid = authService.authorize(auth);
         TravelApplicationsResponse travelApplicationsResponse = travelApplicationService.getTravelApplications(uid, page, size, state);

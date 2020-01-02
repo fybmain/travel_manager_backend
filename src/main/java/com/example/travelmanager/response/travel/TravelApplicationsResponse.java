@@ -1,6 +1,5 @@
 package com.example.travelmanager.response.travel;
 
-import com.example.travelmanager.entity.TravelApplication;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +10,5 @@ public class TravelApplicationsResponse {
     private Integer total;
 
     @Getter @Setter
-    private List<TravelApplication> items;
+    private List<SimpleTravelApplication> items;
 }

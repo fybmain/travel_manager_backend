@@ -10,6 +10,7 @@ import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.TravelApprovalPayload;
+import com.example.travelmanager.response.travel.SimpleTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TravelApplicationServiceImpl implements TravelApplicationService{
@@ -50,7 +54,23 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
         TravelApplicationsResponse response = new TravelApplicationsResponse();
 
-        response.setItems(travelApplications.toList());
+        List<SimpleTravelApplication> simpleTravelApplications = new ArrayList<SimpleTravelApplication>();
+        for (TravelApplication travelApplication: travelApplications) {
+            SimpleTravelApplication t = new SimpleTravelApplication();
+            t.setApplyId(travelApplication.getId());
+            t.setApplyTime(travelApplication.getApplyTime());
+            t.setStatus(travelApplication.getStatus());
+
+            var queryUser = userDao.findById(travelApplication.getApplicantId());
+            if (queryUser.isEmpty()) {
+                t.setApplicantName("用户不存在");
+            }
+            else  {
+                t.setApplicantName(queryUser.get().getName());
+            }
+            simpleTravelApplications.add(t);
+        }
+        response.setItems(simpleTravelApplications);
         response.setTotal((int)travelApplications.getTotalElements());
         return response;
     }
