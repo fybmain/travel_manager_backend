@@ -1,10 +1,7 @@
 package com.example.travelmanager.controller;
 
 
-import com.example.travelmanager.config.WebException.BadRequestException;
-import com.example.travelmanager.config.WebException.ForbiddenException;
-import com.example.travelmanager.config.WebException.PaymentControllerException;
-import com.example.travelmanager.config.WebException.UnauthorizedException;
+import com.example.travelmanager.config.WebException.*;
 import com.example.travelmanager.controller.bean.ResultBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,23 +35,10 @@ public class WebExceptionHandler {
         return ResultBean.error(HttpStatus.FORBIDDEN, 403, "禁止访问");
     }
 
-
-    // PaymentControllerExceptions
+    // 业务错误
     @ExceptionHandler
-    public ResponseEntity TravelApplicationNotFoundHandler(PaymentControllerException e) {
-        if (e.getCode() == PaymentControllerException.TravelApplicationNotFound) {
-            return ResultBean.error(e);
-        } else if (e.getCode() == PaymentControllerException.PaymentApplicationNotFound) {
-            return ResultBean.error(e);
-        } else if (e.getCode() == PaymentControllerException.UserNotFound) {
-            return ResultBean.error(e);
-        } else if (e.getCode() == PaymentControllerException.ImageUploadFailed) {
-            return ResultBean.error(e);
-        } else if (e.getCode() == PaymentControllerException.ImageGetFailed) {
-            return ResultBean.error(e);
-        }
-
-        return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, "未知错误");
+    public ResponseEntity TravelApplicationNotFoundHandler(ErrorException e) {
+        return ResultBean.error(e);
     }
 
     @ExceptionHandler
