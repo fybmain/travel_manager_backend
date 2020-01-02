@@ -1,9 +1,9 @@
 package com.example.travelmanager.controller;
 
+import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
-import com.example.travelmanager.enums.RegisterErrorEnum;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.service.auth.AuthService;
@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import response.TokenResponse;
 
 @RestController
@@ -44,17 +41,26 @@ public class AuthController {
         return ResultBean.success(token);
     }
 
+    @GetMapping("/token")
+    @ApiOperation(value = "refresh token", response = ResultBean.class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
+            @ApiResponse(code = 401, message = "not a valid token", response = ResultBean.class)
+    })
+    public HttpEntity refreshToken(@RequestHeader(Constant.HEADER_STRING) String auth) {
+        int uid = authService.authorize(auth);
+        User user = userDao.findById(uid).get();
+        return ResultBean.success((authService.generateTokenResponse(user)));
+    }
+
     @PostMapping("/register")
     @ApiOperation(value = "register a new user", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 201, message = "{code=0,msg=success}", response = ResultBean.class),
-            @ApiResponse(code = 400, message = "{code=1,msg='work id exists'}", response = ResultBean.class)
+            @ApiResponse(code = 201, message = "{code=0,msg='success'}", response = ResultBean.class),
+            @ApiResponse(code = 400, message = "{code=1001,msg='work id exists'}", response = ResultBean.class)
     })
     public HttpEntity Register(@Validated @RequestBody RegisterPayload registerPayload) {
-        RegisterErrorEnum result = authService.register(registerPayload);
-        if (result == RegisterErrorEnum.WORKIDEXIST) {
-            return ResultBean.error(HttpStatus.BAD_REQUEST, result.getCode(), result.getMsg());
-        }
+        authService.register(registerPayload);
         return ResultBean.success(HttpStatus.CREATED);
     }
 }

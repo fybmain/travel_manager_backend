@@ -2,11 +2,11 @@ package com.example.travelmanager.service.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
+import com.example.travelmanager.config.WebException.AuthControllerException;
 import com.example.travelmanager.config.WebException.ForbiddenException;
 import com.example.travelmanager.config.WebException.UnauthorizedException;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
-import com.example.travelmanager.enums.RegisterErrorEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.RegisterPayload;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,15 @@ public class AuthServiceImpl implements AuthService {
     private UserDao userDao;
 
     @Override
+    public int authorize(String tokenString) {
+        Token token = decryptToken(tokenString);
+        Date now = new Date();
+        if (token == null || now.after(token.getExpire())) {
+            throw new UnauthorizedException();
+        }
+        return token.getId();
+    }
+    @Override
     public int authorize(String tokenString, UserRoleEnum... userRoleEnums) {
         Token token = decryptToken(tokenString);
         Date now = new Date();
@@ -45,10 +54,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterErrorEnum register(RegisterPayload registerPayload) {
+    public void register(RegisterPayload registerPayload) {
 
         if (userDao.findByWorkId(registerPayload.getWorkId()) != null) {
-            return RegisterErrorEnum.WORKIDEXIST;
+            throw AuthControllerException.WorkIdNotExistException;
         }
         User user = new User();
         user.setName(registerPayload.getName());
@@ -59,7 +68,6 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(UserRoleEnum.Employee.getRoleId());
         user.setStatus(true);
         userDao.save(user);
-        return RegisterErrorEnum.SUCCESS;
     }
 
     @Override
