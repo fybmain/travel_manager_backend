@@ -1,7 +1,6 @@
 package com.example.travelmanager.service.TravelApplication;
 
 import com.example.travelmanager.config.WebException.BadRequestException;
-import com.example.travelmanager.config.WebException.ForbiddenException;
 import com.example.travelmanager.config.WebException.TravelControllerException;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
@@ -11,11 +10,19 @@ import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.TravelApprovalPayload;
+import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskRejectedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TravelApplicationServiceImpl implements TravelApplicationService{
@@ -25,6 +32,31 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
     @Autowired
     private TravelApplicationDao travelApplicationDao;
+
+    @Override
+    public TravelApplicationsResponse getTravelApplications(int uid, int page, int size) {
+        page = (page > 0) ? (page - 1) : 0;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
+
+        Page<TravelApplication> applications = travelApplicationDao.findAll( (Specification<TravelApplication>) (root, query, criteriaBuilder) -> {
+            List<Predicate> list = new ArrayList();
+            list.add(criteriaBuilder.equal(root.get("applicantId").as(Integer.class), uid));
+            Predicate[] p = new Predicate[list.size()];
+            return criteriaBuilder.and(list.toArray(p));
+        }, pageable);
+
+        // response: 返回值
+        TravelApplicationsResponse response = new TravelApplicationsResponse();
+
+        response.setItems(new ArrayList<TravelApplication>());
+        response.getItems().addAll(applications.toList());
+
+        // 设置总数
+        response.setTotal((int) applications.getTotalElements());
+
+        return response;
+    }
 
     @Override
     public TravelApplication getTravelApplication(int uid, int applyId) {
