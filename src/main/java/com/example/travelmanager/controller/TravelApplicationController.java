@@ -10,6 +10,7 @@ import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import com.example.travelmanager.service.TravelApplication.TravelApplicationService;
 import com.example.travelmanager.service.auth.AuthService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +68,9 @@ public class TravelApplicationController {
     })
     public HttpEntity getApplications(
             @RequestHeader(Constant.HEADER_STRING) String auth,
-            @RequestParam(defaultValue = "1", value = "page number") int page,
-            @RequestParam(defaultValue = "5", value = "page size") int size,
-            @RequestParam(defaultValue = "-1", value = "applications status, -1 for all, 0 for unfinished and 1 for finished") int state
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @ApiParam(value = ("all, finished, unfinished"))  @RequestParam(defaultValue = "All") String state
     ) {
         int uid = authService.authorize(auth);
         TravelApplicationsResponse travelApplicationsResponse = travelApplicationService.getTravelApplications(uid, page, size, state);
