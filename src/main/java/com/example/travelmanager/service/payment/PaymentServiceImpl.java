@@ -169,8 +169,7 @@ public class PaymentServiceImpl implements PaymentService {
         response.setItems(new ArrayList<SimplePayment>());
 
         // 设置总数
-        Long total = paymentApplicationDao.count();
-        response.setTotal(total.intValue());
+        response.setTotal((int) payments.getTotalElements());
 
         for(var p:payments) {
             // 需要查询申请人名字
