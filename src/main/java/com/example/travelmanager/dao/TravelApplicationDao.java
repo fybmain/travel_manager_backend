@@ -11,15 +11,15 @@ import org.springframework.data.repository.query.Param;
 import java.util.Set;
 
 public interface TravelApplicationDao extends CrudRepository<TravelApplication, Integer> , JpaSpecificationExecutor<TravelApplication> {
-    @Query("select t from TravelApplication t where t.applicantId = :uid")
-    Page<TravelApplication> finaAllByApplicantId(@Param("uid") int uid, Pageable pageable);
-
-    @Query("select t from TravelApplication t where t.applicantId = :uid and (t.status = 3 or t.status = 4)")
-    Page<TravelApplication> finaAllByApplicantIdFinished(@Param("uid") int uid, Pageable pageable);
-
-    @Query("select t from TravelApplication t where t.applicantId = :uid and (t.status = 1 or t.status = 2)")
-    Page<TravelApplication> finaAllByApplicantIdUnFinished(@Param("uid") int uid, Pageable pageable);
+    @Query("select t from TravelApplication t where t.applicantId = :uid and t.status in :statusSet")
+    Page<TravelApplication> finaAllByApplicantId(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 
     @Query("select t from TravelApplication t where t.status in :statusSet")
     Page<TravelApplication> findAllWithState(@Param("statusSet")Set<Integer> set, Pageable pageable);
+
+    @Query("select t from TravelApplication t where t.departmentId = :departmentId and t.status in :statusSet")
+    Page<TravelApplication> findAllByDepartmentIdAndStatus(@Param("departmentId") int departmentId, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
+
+    @Query("select t from TravelApplication t where t.status in :statusSet")
+    Page<TravelApplication> findAllByStatus(@Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 }

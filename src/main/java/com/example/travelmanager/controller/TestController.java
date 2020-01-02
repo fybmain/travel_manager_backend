@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -34,10 +34,7 @@ public class TestController {
     @ResponseBody
     public HttpEntity access(@RequestHeader(Constant.HEADER_STRING) String auth) {
         int uid = authService.authorize(auth);
-        Set<Integer> set = new HashSet<Integer>();
-        set.add(1);
-        set.add(2);
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
-        return ResultBean.success(travelApplicationDao.findAllWithState(set, pageable).toList());
+        return ResultBean.success(travelApplicationDao.findAllWithState(new HashSet<>(Arrays.asList(1,2)), pageable).toList());
     }
 }

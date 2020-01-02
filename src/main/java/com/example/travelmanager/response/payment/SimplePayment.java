@@ -1,6 +1,5 @@
 package com.example.travelmanager.response.payment;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
