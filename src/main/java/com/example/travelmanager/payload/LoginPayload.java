@@ -9,14 +9,12 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginPayload {
-    @Getter
-    @Setter
+    @Getter @Setter
     @ApiModelProperty
     @NotBlank(message = "workId should not be null")
     private String workId;
 
-    @Setter
-    @Getter
+    @Setter @Getter
     @ApiModelProperty
     @NotBlank(message = "password should not be null")
     private String password;

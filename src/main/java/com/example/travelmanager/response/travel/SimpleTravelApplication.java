@@ -1,11 +1,11 @@
-package com.example.travelmanager.response.payment;
+package com.example.travelmanager.response.travel;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public class SimplePayment{
+import java.util.Date;
 
-    // paymentApplication Id
+public class SimpleTravelApplication{
     @Getter @Setter
     private Integer applyId;
 
@@ -13,11 +13,11 @@ public class SimplePayment{
     private String applicantName;
 
     @Getter @Setter
-    private String departmentName;
-
-    @Getter @Setter
-    private String applyTime;
+    private Date applyTime;
 
     @Getter @Setter
     private Integer status;
+
+    @Getter @Setter
+    private String DepartmentName;
 }
