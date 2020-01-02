@@ -29,19 +29,19 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     private TravelApplicationDao travelApplicationDao;
 
     @Override
-    public TravelApplicationsResponse getTravelApplications(int uid, int page, int size, int state) {
+    public TravelApplicationsResponse getTravelApplications(int uid, int page, int size, String state) {
         page = (page > 0) ? (page - 1) : 0;
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
         Page<TravelApplication> travelApplications = null;
 
-        if (state == -1) {
+        if (state.equalsIgnoreCase("All")) {
             travelApplications = travelApplicationDao.finaAllByApplicantId(uid, pageable);
         }
-        else if (state == 0){
+        else if (state.equalsIgnoreCase("Unfinished")){
             travelApplications = travelApplicationDao.finaAllByApplicantIdUnFinished(uid, pageable);
         }
-        else if (state == 1) {
+        else if (state.equalsIgnoreCase("Finished")) {
             travelApplications = travelApplicationDao.finaAllByApplicantIdFinished(uid, pageable);
         }
         else {

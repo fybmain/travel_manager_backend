@@ -12,5 +12,5 @@ public interface TravelApplicationService {
 
     TravelApplication getTravelApplication(int uid, int applyId);
 
-    TravelApplicationsResponse getTravelApplications(int uid, int page, int size, int state);
+    TravelApplicationsResponse getTravelApplications(int uid, int page, int size, String state);
 }
