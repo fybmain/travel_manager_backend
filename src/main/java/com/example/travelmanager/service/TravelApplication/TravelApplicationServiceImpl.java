@@ -15,8 +15,6 @@ import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.TravelApprovalPayload;
 import com.example.travelmanager.response.travel.SimpleTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +52,9 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             travelApplications = travelApplicationDao.findAllByStatus(statusSet, pageable);
         }
         else {
+            if (user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+                departmentId = user.getDepartmentId();
+            }
             travelApplications = travelApplicationDao.findAllByDepartmentIdAndStatus(departmentId, statusSet, pageable);
         }
 
