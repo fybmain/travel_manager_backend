@@ -12,6 +12,7 @@ import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.TravelApprovalPayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,6 +25,27 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
     @Autowired
     private TravelApplicationDao travelApplicationDao;
+
+    @Override
+    public TravelApplication getTravelApplication(int uid, int applyId) {
+        User user = userDao.findById(uid).get();
+        var query = travelApplicationDao.findById(applyId);
+        if (query.isEmpty()) {
+            throw TravelControllerException.TravelApplicationNotFoundException;
+        }
+        TravelApplication travelApplication = query.get();
+        if (user.getRole() == UserRoleEnum.Employee.getRoleId()) {
+            if (travelApplication.getApplicantId() != user.getId()) {
+                throw TravelControllerException.TravelApplicationForbiddenException;
+            }
+        }
+        else if (user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+            if (travelApplication.getDepartmentId() != user.getDepartmentId()) {
+                throw TravelControllerException.TravelApplicationForbiddenException;
+            }
+        }
+        return travelApplication;
+    }
 
     @Override
     public void travelApproval(int uid,TravelApprovalPayload travelApprovalPayload) {
