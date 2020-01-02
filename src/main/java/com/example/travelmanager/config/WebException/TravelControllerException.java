@@ -10,7 +10,7 @@ public class TravelControllerException extends ErrorException {
 
     private static final Integer TravelApplicationForbidden= 1002;
     public static final TravelControllerException TravelApplicationForbiddenException =
-            new TravelControllerException(TravelApplicationForbidden, "Not allowed to modify this application", HttpStatus.NOT_FOUND);
+            new TravelControllerException(TravelApplicationForbidden, "Not allowed to access this application", HttpStatus.NOT_FOUND);
 
     // 构造函数
     private TravelControllerException(int code, String msg, HttpStatus httpStatus) {
