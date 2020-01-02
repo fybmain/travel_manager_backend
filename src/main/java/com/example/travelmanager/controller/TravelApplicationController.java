@@ -65,8 +65,9 @@ public class TravelApplicationController {
     @ApiOperation(value = "get all travel applications for current user", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
+            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = TravelApplicationsResponse.class)
     })
-    public HttpEntity getApplications(
+    public HttpEntity getApplicationsMe(
             @RequestHeader(Constant.HEADER_STRING) String auth,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -77,6 +78,25 @@ public class TravelApplicationController {
         return ResultBean.success(travelApplicationsResponse);
     }
 
+    @GetMapping("/applications")
+    @ApiOperation(value = "get all travel applications", response = ResultBean.class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
+            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = TravelApplicationsResponse.class)
+    })
+    public HttpEntity getApplications(
+            @RequestHeader(Constant.HEADER_STRING) String auth,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @ApiParam(value = "all, finished, unfinished")  @RequestParam(defaultValue = "All") String state,
+            @ApiParam(value = "departmentId") @RequestParam(defaultValue = "0") Integer departmentId
+    ) {
+        int uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager, UserRoleEnum.Admin);
+
+        TravelApplicationsResponse travelApplicationsResponse =
+                travelApplicationService.getTravelApplicationsByDepartmentId(uid, page, size, state, departmentId);
+        return ResultBean.success(travelApplicationsResponse);
+    }
 
     @PutMapping("/approval")
     @ApiResponses({

@@ -18,5 +18,6 @@ public class SimpleTravelApplication{
     @Getter @Setter
     private Integer status;
 
-
+    @Getter @Setter
+    private String DepartmentName;
 }
