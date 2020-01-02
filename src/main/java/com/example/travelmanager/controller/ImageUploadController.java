@@ -29,6 +29,7 @@ public class ImageUploadController {
     @ApiOperation(value = "上传图片")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "上传成功", response = ImageUploadResponse.class),
+            @ApiResponse(code = 400, message = "后台获取图片失败 {code=2002, msg=...}", response = ResultBean.class),
             @ApiResponse(code = 500, message = "上传失败 {code=2001, msg=Picture uploaded failed} ", response = ResultBean.class)
     })
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
