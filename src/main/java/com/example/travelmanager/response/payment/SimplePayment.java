@@ -13,6 +13,9 @@ public class SimplePayment{
     private String applicantName;
 
     @Getter @Setter
+    private String departmentName;
+
+    @Getter @Setter
     private String applyTime;
 
     @Getter @Setter

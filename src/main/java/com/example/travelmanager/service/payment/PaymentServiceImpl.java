@@ -1,15 +1,10 @@
 package com.example.travelmanager.service.payment;
 
-import com.alibaba.fastjson.JSON;
+import com.example.travelmanager.config.Constant;
+import com.example.travelmanager.config.WebException.BadRequestException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
-import com.example.travelmanager.dao.PaymentApplicationDao;
-import com.example.travelmanager.dao.PictureDao;
-import com.example.travelmanager.dao.TravelApplicationDao;
-import com.example.travelmanager.dao.UserDao;
-import com.example.travelmanager.entity.PaymentApplication;
-import com.example.travelmanager.entity.Picture;
-import com.example.travelmanager.entity.TravelApplication;
-import com.example.travelmanager.entity.User;
+import com.example.travelmanager.dao.*;
+import com.example.travelmanager.entity.*;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.PaymentApplicationPayload;
@@ -22,16 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 
 // TravelApplicationException 出差申请不存在
 @Service
@@ -46,6 +36,8 @@ public class PaymentServiceImpl implements PaymentService {
     private PictureDao pictureDao;
     @Autowired
     private TravelApplicationDao travelApplicationDao;
+    @Autowired
+    private DepartmentDao departmentDao;
 
     @Override
     public PaymentApplication createByPayload(PaymentApplicationPayload payload, Integer userId) {
@@ -98,7 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public PaymentApplicationResponse getById(Integer Id) {
-
+        // TODO 权限检查
         var queryTemp = paymentApplicationDao.findById(Id);
         if(queryTemp.isEmpty()) {
             throw PaymentControllerException.PaymentApplicationNotFoundException;
@@ -144,25 +136,38 @@ public class PaymentServiceImpl implements PaymentService {
         return response;
     }
 
-    // 仅显示当前用户的
-    public SimplePaymentListResponse listCanPay(Integer userId, Integer pageSize, Integer pageNum) {
-        User user = userDao.findById(userId).get();
+    public SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId) {
+        // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
+        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
+            throw PaymentControllerException.StateParamErrorException;
+        }
 
-        // TODO: 根据用户角色进行区分 当前为了测试分页查询只有当前用户的
+        // 2. departmentId < -1 抛出异常
+        if(departmentId < -1) {
+            throw PaymentControllerException.DepartmentIdParamErrorException;
+        }
 
+        // 分页相关实例
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
+        Page<PaymentApplication> payments;
 
-        // payments: 查询出来的paymentApplication集合. 其中的size为每一页的size，而非total
-        Page<PaymentApplication> payments = paymentApplicationDao.findAll(new Specification<PaymentApplication>(){
-            @Override
-            public Predicate toPredicate(Root<PaymentApplication> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                List<Predicate> list = new ArrayList<Predicate>();
-                // 注意这里root.get的为类中的名字，而不是数据库的
-                list.add(criteriaBuilder.equal(root.get("applicantId").as(Integer.class), userId));
-                Predicate[] p = new Predicate[list.size()];
-                return criteriaBuilder.and(list.toArray(p));
+        // 发起请求的用户
+        final User user = userDao.findById(userId).get();
+
+        //3. 判断用户角色 角色为部门经理返回部门的 角色为总经理按照departmentId设计返回
+        if(user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+            // 3.1 部门经理先获取经理所属部门，且status相同的items
+            payments = paymentApplicationDao.findAllByDepartmentIdAndStatus(user.getDepartmentId(), statusSet, pageable);
+        } else {
+            // 3.2 总经理先看传入的参数
+            if(departmentId != -1) {
+                payments = paymentApplicationDao.findAllByDepartmentIdAndStatus(departmentId, statusSet, pageable);
             }
-        }, pageable);
+            else {
+                payments = paymentApplicationDao.findAllByStatus(statusSet, pageable);
+            }
+        }
 
         // response: 返回值
         SimplePaymentListResponse response = new SimplePaymentListResponse();
@@ -174,15 +179,76 @@ public class PaymentServiceImpl implements PaymentService {
         for(var p:payments) {
             // 需要查询申请人名字
             var queryUserTemp = userDao.findById(p.getApplicantId());
+            String username = "";
             if(queryUserTemp.isEmpty()) {
-                log.error("userId:" + p.getApplicantId() + " Not Found");
-                throw PaymentControllerException.UserNotFoundException;
+                username = "用户已删除";
+            } else {
+                User u = queryUserTemp.get();
+                username = u.getName();
             }
-            user = queryUserTemp.get();
+
+            var queryDepartmentTemp = departmentDao.findById(p.getDepartmentId());
+            String departmentName = "";
+            if(queryDepartmentTemp.isEmpty()) {
+                departmentName = "部门已删除";
+            } else {
+                Department department = queryDepartmentTemp.get();
+                departmentName = department.getName();
+            }
 
             SimplePayment sp = new SimplePayment();
             sp.setApplyId(p.getId());
-            sp.setApplicantName(user.getName());
+            sp.setApplicantName(username);
+            sp.setDepartmentName(departmentName);
+            sp.setApplyTime(p.getApplyTime().toString());
+            sp.setStatus(p.getStatus());
+
+            response.getItems().add(sp);
+        }
+
+        return response;
+
+    }
+
+    public SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state) {
+        // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
+        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
+            throw PaymentControllerException.StateParamErrorException;
+        }
+
+        // 发起请求的用户
+        final User user = userDao.findById(userId).get();
+
+        // response初始化
+        SimplePaymentListResponse response = new SimplePaymentListResponse();
+        response.setItems(new ArrayList<SimplePayment>());
+
+        // 分页相关实例
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
+        Page<PaymentApplication> payments;
+        payments = paymentApplicationDao.findAllByApplicantId(userId, statusSet, pageable);
+
+        // 设置总数
+        response.setTotal((int) payments.getTotalElements());
+
+        // 查询用户名和部门名
+        var username = user.getName();
+
+        for(var p:payments) {
+            var queryDepartmentTemp = departmentDao.findById(p.getDepartmentId());
+            String departmentName = "";
+            if(queryDepartmentTemp.isEmpty()) {
+                departmentName = "部门已删除";
+            } else {
+                Department department = queryDepartmentTemp.get();
+                departmentName = department.getName();
+            }
+
+            SimplePayment sp = new SimplePayment();
+            sp.setApplyId(p.getId());
+            sp.setApplicantName(username);
+            sp.setDepartmentName(departmentName);
             sp.setApplyTime(p.getApplyTime().toString());
             sp.setStatus(p.getStatus());
 

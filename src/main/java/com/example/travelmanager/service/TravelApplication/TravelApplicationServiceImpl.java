@@ -43,7 +43,10 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         User user = userDao.findById(uid).get();
 
         // valid state
-        Set<Integer> statusSet = getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
+            throw TravelControllerException.GetApplicationsStateErrorException;
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
@@ -65,7 +68,10 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     public TravelApplicationsResponse getTravelApplications(int uid, int page, int size, String state) {
         page = (page > 0) ? (page - 1) : 0;
 
-        Set<Integer> statusSet = getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
+            throw TravelControllerException.GetApplicationsStateErrorException;
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
@@ -74,20 +80,6 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         return pageApplications(travelApplications);
     }
 
-    private HashSet<Integer>getStatusSet(String state) {
-        if (state.equalsIgnoreCase("all")){
-            return Constant.APPLICATION_ALL_STATE;
-        }
-        else if (state.equalsIgnoreCase("finished")) {
-            return Constant.APPLICATION_FINISHED_STATE;
-        }
-        else if (state.equalsIgnoreCase("unfinished")) {
-            return Constant.APPLICATION_UNFINISHED_STATE;
-        }
-        else {
-            throw TravelControllerException.GetApplicationsStateErrorException;
-        }
-    }
 
     private TravelApplicationsResponse pageApplications(Page<TravelApplication> travelApplications) {
 

@@ -11,11 +11,10 @@ import com.example.travelmanager.response.payment.SimplePaymentListResponse;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.payment.PaymentService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,11 +78,43 @@ public class PaymentApplicationController {
         return ResultBean.success(response);
     }
 
-    @GetMapping("/canpay")
+
+    @ApiOperation(value = "报销申请列表.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "获取成功", response = SimplePaymentListResponse.class),
+            @ApiResponse(code = 403, message = "无权限", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "未找到该用户： {code=1003, msg = ...}", response = ResultBean.class),
+            @ApiResponse(code = 500, message = "未知错误", response = ResultBean.class)
+    })
+    @GetMapping("/applications")
     @ResponseBody
-    public ResponseEntity listCanPay(@RequestHeader(Constant.HEADER_STRING) String auth,
+    public ResponseEntity listUncheck(@RequestHeader(Constant.HEADER_STRING) String auth,
                                      @RequestParam(defaultValue = "5") Integer size,
-                                     @RequestParam(defaultValue = "1") Integer page) {
+                                     @RequestParam(defaultValue = "1") Integer page,
+                                     @ApiParam(name = "state", value = "申请状态, 包括finished unfinished all, 即为未完成，已完成和全部") @RequestParam(defaultValue = "all") String state,
+                                     @ApiParam(name = "departmentId", value = "部门id，为-1时为所有部门") @RequestParam(defaultValue = "-1") Integer departmentId) {
+        // 验证token
+        // 不允许普通员工访问
+        Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+        // 查询中page从0开始，而前端从1开始，因此在这里-1；
+        page = page-1;
+        if(page < 0) {
+            page = 0;
+        }
+
+        SimplePaymentListResponse response = paymentService.listApplications(userId, size, page, state, departmentId);
+
+        return ResultBean.success(response);
+    }
+
+
+    // TODO: API 文档  Approve
+    @GetMapping("/applications/me")
+    @ResponseBody
+    public ResponseEntity listMyUncheck(@RequestHeader(Constant.HEADER_STRING) String auth,
+                                        @RequestParam(defaultValue = "5") Integer size,
+                                        @RequestParam(defaultValue = "1") Integer page,
+                                        @ApiParam(name = "state", value = "申请状态, 包括finished unfinished all, 即为未完成，已完成和全部") @RequestParam(defaultValue = "all") String state) {
         // 验证token
         Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
         // 查询中page从0开始，而前端从1开始，因此在这里-1；
@@ -92,7 +123,7 @@ public class PaymentApplicationController {
             page = 0;
         }
 
-        SimplePaymentListResponse response = paymentService.listCanPay(userId, size, page);
+        SimplePaymentListResponse response = paymentService.listMyApplications(userId, size, page, state);
 
         return ResultBean.success(response);
     }

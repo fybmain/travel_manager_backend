@@ -14,9 +14,6 @@ public interface TravelApplicationDao extends CrudRepository<TravelApplication, 
     @Query("select t from TravelApplication t where t.applicantId = :uid and t.status in :statusSet")
     Page<TravelApplication> finaAllByApplicantId(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 
-    @Query("select t from TravelApplication t where t.status in :statusSet")
-    Page<TravelApplication> findAllWithState(@Param("statusSet")Set<Integer> set, Pageable pageable);
-
     @Query("select t from TravelApplication t where t.departmentId = :departmentId and t.status in :statusSet")
     Page<TravelApplication> findAllByDepartmentIdAndStatus(@Param("departmentId") int departmentId, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 

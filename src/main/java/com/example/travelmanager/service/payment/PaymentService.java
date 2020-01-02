@@ -10,5 +10,7 @@ public interface PaymentService {
 
     PaymentApplicationResponse getById(Integer Id);
 
-    SimplePaymentListResponse listCanPay(Integer userId, Integer pageSize, Integer pageNum);
+    SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId);
+
+    SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state);
 }

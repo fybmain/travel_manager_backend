@@ -19,6 +19,12 @@ public class PaymentControllerException extends ErrorException {
     private static final Integer ImageGetFailed = 2002;
     public static final PaymentControllerException ImageGetFailedException = new PaymentControllerException(ImageGetFailed, "Picture get from frontend failed", HttpStatus.BAD_REQUEST);
 
+    private static final Integer StateParamError = 3001;
+    public static final PaymentControllerException StateParamErrorException = new PaymentControllerException(StateParamError, "state param can only be \"all\", \"finished\" and \"unfinished\" ", HttpStatus.BAD_REQUEST);
+
+    private static final Integer DepartmentIdParamError = 3002;
+    public static final PaymentControllerException DepartmentIdParamErrorException = new PaymentControllerException(DepartmentIdParamError, "departmentId should >= -1", HttpStatus.BAD_REQUEST);
+
 
     // 构造函数
     private PaymentControllerException(int code, String msg, HttpStatus httpStatus) {
