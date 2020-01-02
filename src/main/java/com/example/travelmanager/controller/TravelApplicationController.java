@@ -60,18 +60,19 @@ public class TravelApplicationController {
         return ResultBean.success(travelApplication);
     }
 
-    @GetMapping("/applications")
+    @GetMapping("/applications/me")
     @ApiOperation(value = "get all travel applications for current user", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
     })
     public HttpEntity getApplications(
             @RequestHeader(Constant.HEADER_STRING) String auth,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "1", value = "page number") int page,
+            @RequestParam(defaultValue = "5", value = "page size") int size,
+            @RequestParam(defaultValue = "-1", value = "applications status, -1 for all, 0 for unfinished and 1 for finished") int state
     ) {
         int uid = authService.authorize(auth);
-        TravelApplicationsResponse travelApplicationsResponse = travelApplicationService.getTravelApplications(uid, page, size);
+        TravelApplicationsResponse travelApplicationsResponse = travelApplicationService.getTravelApplications(uid, page, size, state);
         return ResultBean.success(travelApplicationsResponse);
     }
 

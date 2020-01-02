@@ -12,6 +12,10 @@ public class TravelControllerException extends ErrorException {
     public static final TravelControllerException TravelApplicationForbiddenException =
             new TravelControllerException(TravelApplicationForbidden, "Not allowed to access this application", HttpStatus.NOT_FOUND);
 
+    private static final Integer GetApplicationsStateError= 1003;
+    public static final TravelControllerException GetApplicationsStateErrorException =
+            new TravelControllerException(GetApplicationsStateError, "state must be -1, 0, 1", HttpStatus.BAD_REQUEST);
+
     // 构造函数
     private TravelControllerException(int code, String msg, HttpStatus httpStatus) {
         super(code, msg, httpStatus);
