@@ -1,6 +1,8 @@
 package com.example.travelmanager.service.TravelApplication;
 
 import com.example.travelmanager.config.WebException.BadRequestException;
+import com.example.travelmanager.config.WebException.ForbiddenException;
+import com.example.travelmanager.config.WebException.TravelControllerException;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.TravelApplication;
@@ -8,6 +10,7 @@ import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
+import com.example.travelmanager.payload.TravelApprovalPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,41 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     private TravelApplicationDao travelApplicationDao;
 
     @Override
-    public void TravelApply(int uid, TravelApplicationPayload travelApplicationPayload) {
+    public void travelApproval(int uid,TravelApprovalPayload travelApprovalPayload) {
+        User user = userDao.findById(uid).get();
+        var query = travelApplicationDao.findById(travelApprovalPayload.getApplyId());
+        if (query.isEmpty()) {
+            throw TravelControllerException.TravelApplicationNotFoundException;
+        }
+        TravelApplication travelApplication = query.get();
+        if (travelApplication.getStatus() == ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus()) {
+            if (user.getRole() != UserRoleEnum.DepartmentManager.getRoleId() || user.getDepartmentId() != travelApplication.getDepartmentId()) {
+                throw TravelControllerException.TravelApplicationForbiddenException;
+            }
+            if (travelApprovalPayload.getApproved() == true) {
+                travelApplication.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
+            }
+            else {
+                travelApplication.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+            }
+            travelApplicationDao.save(travelApplication);
+        }
+        else if (travelApplication.getStatus() == ApplicationStatusEnum.NeedManagerApprove.getStatus()) {
+            if (user.getRole() != UserRoleEnum.Manager.getRoleId()) {
+                throw TravelControllerException.TravelApplicationForbiddenException;
+            }
+            if (travelApprovalPayload.getApproved() == true) {
+                travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
+            }
+            else {
+                travelApplication.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+            }
+            travelApplicationDao.save(travelApplication);
+        }
+    }
+
+    @Override
+    public void travelApply(int uid, TravelApplicationPayload travelApplicationPayload) {
         User user = userDao.findById(uid).get();
         TravelApplication travelApplication = new TravelApplication();
 

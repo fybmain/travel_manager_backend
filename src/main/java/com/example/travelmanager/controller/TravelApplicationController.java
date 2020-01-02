@@ -4,6 +4,7 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
+import com.example.travelmanager.payload.TravelApprovalPayload;
 import com.example.travelmanager.service.TravelApplication.TravelApplicationService;
 import com.example.travelmanager.service.auth.AuthService;
 import io.swagger.annotations.ApiOperation;
@@ -36,8 +37,23 @@ public class TravelApplicationController {
             @Validated @RequestBody TravelApplicationPayload travelApplicationPayload
     ) {
         int uid = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
-        travelApplicationService.TravelApply(uid, travelApplicationPayload);
+        travelApplicationService.travelApply(uid, travelApplicationPayload);
 
         return ResultBean.success(HttpStatus.CREATED);
+    }
+
+    @PutMapping("/approval")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "{code=1001, msg='TravelApplication not found'}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "{code=1002, msg='Not allowed to modify this application'}", response = ResultBean.class),
+    })
+    public HttpEntity travelApproval(
+            @RequestHeader(Constant.HEADER_STRING) String auth,
+            @Validated @RequestBody TravelApprovalPayload travelApprovalPayload
+    ){
+        int uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+        travelApplicationService.travelApproval(uid, travelApprovalPayload);
+        return ResultBean.success();
     }
 }
