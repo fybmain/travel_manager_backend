@@ -33,8 +33,6 @@ public class TestController {
     @RequestMapping("/test")
     @ResponseBody
     public HttpEntity access(@RequestHeader(Constant.HEADER_STRING) String auth) {
-        int uid = authService.authorize(auth);
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
-        return ResultBean.success(travelApplicationDao.findAllWithState(new HashSet<>(Arrays.asList(1,2)), pageable).toList());
+        return ResultBean.success();
     }
 }

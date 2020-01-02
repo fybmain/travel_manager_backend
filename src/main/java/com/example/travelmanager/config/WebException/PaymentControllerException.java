@@ -25,6 +25,7 @@ public class PaymentControllerException extends ErrorException {
     private static final Integer DepartmentIdParamError = 3002;
     public static final PaymentControllerException DepartmentIdParamErrorException = new PaymentControllerException(DepartmentIdParamError, "departmentId should >= -1", HttpStatus.BAD_REQUEST);
 
+
     // 构造函数
     private PaymentControllerException(int code, String msg, HttpStatus httpStatus) {
         super(code, msg, httpStatus);

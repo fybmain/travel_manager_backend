@@ -91,7 +91,7 @@ public class PaymentApplicationController {
     public ResponseEntity listUncheck(@RequestHeader(Constant.HEADER_STRING) String auth,
                                      @RequestParam(defaultValue = "5") Integer size,
                                      @RequestParam(defaultValue = "1") Integer page,
-                                      @ApiParam(name = "state", value = "申请状态, 包括finished unfinished all, 即为未完成，已完成和全部") @RequestParam(defaultValue = "all") String state,
+                                     @ApiParam(name = "state", value = "申请状态, 包括finished unfinished all, 即为未完成，已完成和全部") @RequestParam(defaultValue = "all") String state,
                                      @ApiParam(name = "departmentId", value = "部门id，为-1时为所有部门") @RequestParam(defaultValue = "-1") Integer departmentId) {
         // 验证token
         // 不允许普通员工访问
@@ -107,11 +107,14 @@ public class PaymentApplicationController {
         return ResultBean.success(response);
     }
 
-    @GetMapping("/application/me")
+
+    // TODO: API 文档  Approve
+    @GetMapping("/applications/me")
     @ResponseBody
     public ResponseEntity listMyUncheck(@RequestHeader(Constant.HEADER_STRING) String auth,
                                         @RequestParam(defaultValue = "5") Integer size,
-                                        @RequestParam(defaultValue = "1") Integer page) {
+                                        @RequestParam(defaultValue = "1") Integer page,
+                                        @ApiParam(name = "state", value = "申请状态, 包括finished unfinished all, 即为未完成，已完成和全部") @RequestParam(defaultValue = "all") String state) {
         // 验证token
         Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
         // 查询中page从0开始，而前端从1开始，因此在这里-1；
@@ -120,6 +123,8 @@ public class PaymentApplicationController {
             page = 0;
         }
 
-        return ResultBean.success();
+        SimplePaymentListResponse response = paymentService.listMyApplications(userId, size, page, state);
+
+        return ResultBean.success(response);
     }
 }

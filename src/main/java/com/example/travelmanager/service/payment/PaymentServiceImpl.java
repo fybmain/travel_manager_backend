@@ -1,5 +1,6 @@
 package com.example.travelmanager.service.payment;
 
+import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.WebException.BadRequestException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.dao.*;
@@ -89,7 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public PaymentApplicationResponse getById(Integer Id) {
-
+        // TODO 权限检查
         var queryTemp = paymentApplicationDao.findById(Id);
         if(queryTemp.isEmpty()) {
             throw PaymentControllerException.PaymentApplicationNotFoundException;
@@ -136,28 +137,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId) {
-        /*
-        // 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
-        HashSet<Integer> set = new HashSet<Integer>();
-        if(state.equalsIgnoreCase("finished")) {
-            set.add(ApplicationStatusEnum.ApplicationApproved.getStatus());
-            set.add(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
-        }
-        else if(state.equalsIgnoreCase("unfinished")) {
-            set.add(ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus());
-            set.add(ApplicationStatusEnum.NeedManagerApprove.getStatus());
-        }
-        else if(state.equalsIgnoreCase("all")) {
-            set.add(ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus());
-            set.add(ApplicationStatusEnum.NeedManagerApprove.getStatus());
-            set.add(ApplicationStatusEnum.ApplicationApproved.getStatus());
-            set.add(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
-        }
-        else {
+        // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
+        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
             throw PaymentControllerException.StateParamErrorException;
         }
 
-        // departmentId < -1 抛出异常
+        // 2. departmentId < -1 抛出异常
         if(departmentId < -1) {
             throw PaymentControllerException.DepartmentIdParamErrorException;
         }
@@ -169,11 +155,18 @@ public class PaymentServiceImpl implements PaymentService {
         // 发起请求的用户
         final User user = userDao.findById(userId).get();
 
-        //判断用户角色 角色为部门经理返回部门的 角色为总经理按照departmentId设计返回
+        //3. 判断用户角色 角色为部门经理返回部门的 角色为总经理按照departmentId设计返回
         if(user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
-
-        } else (user.getRole() == UserRoleEnum.Manager.getRoleId()) {
-
+            // 3.1 部门经理先获取经理所属部门，且status相同的items
+            payments = paymentApplicationDao.findAllByDepartmentIdAndStatus(user.getDepartmentId(), statusSet, pageable);
+        } else {
+            // 3.2 总经理先看传入的参数
+            if(departmentId != -1) {
+                payments = paymentApplicationDao.findAllByDepartmentIdAndStatus(departmentId, statusSet, pageable);
+            }
+            else {
+                payments = paymentApplicationDao.findAllByStatus(statusSet, pageable);
+            }
         }
 
         // response: 返回值
@@ -193,7 +186,6 @@ public class PaymentServiceImpl implements PaymentService {
                 User u = queryUserTemp.get();
                 username = u.getName();
             }
-
 
             var queryDepartmentTemp = departmentDao.findById(p.getDepartmentId());
             String departmentName = "";
@@ -216,83 +208,47 @@ public class PaymentServiceImpl implements PaymentService {
 
         return response;
 
-        */
-        return new SimplePaymentListResponse();
     }
 
-    // 仅显示当前用户的
-    public SimplePaymentListResponse listUncheck(Integer userId, Integer pageSize, Integer pageNum) {
+    public SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state) {
+        // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
+        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        if(statusSet == null) {
+            throw PaymentControllerException.StateParamErrorException;
+        }
+
         // 发起请求的用户
         final User user = userDao.findById(userId).get();
 
+        // response初始化
+        SimplePaymentListResponse response = new SimplePaymentListResponse();
+        response.setItems(new ArrayList<SimplePayment>());
+
+        // 分页相关实例
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
         Page<PaymentApplication> payments;
-
-        if(user.getRole() == UserRoleEnum.Employee.getRoleId()) {
-            payments = paymentApplicationDao.findNeedCheckByUserId(userId, pageable);
-        }
-        else if(user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
-            payments = paymentApplicationDao.findNeedCheckByDepartmentId(user.getDepartmentId(), pageable);
-        }
-        else {
-            payments = paymentApplicationDao.findAllNeedCheck(pageable);
-        }
-
-
-        // response: 返回值
-        SimplePaymentListResponse response = new SimplePaymentListResponse();
-        response.setItems(new ArrayList<SimplePayment>());
+        payments = paymentApplicationDao.findAllByApplicantId(userId, statusSet, pageable);
 
         // 设置总数
         response.setTotal((int) payments.getTotalElements());
 
+        // 查询用户名和部门名
+        var username = user.getName();
+
         for(var p:payments) {
-            // 需要查询申请人名字
-            var queryUserTemp = userDao.findById(p.getApplicantId());
-            if(queryUserTemp.isEmpty()) {
-                log.error("userId:" + p.getApplicantId() + " Not Found");
-                throw PaymentControllerException.UserNotFoundException;
+            var queryDepartmentTemp = departmentDao.findById(p.getDepartmentId());
+            String departmentName = "";
+            if(queryDepartmentTemp.isEmpty()) {
+                departmentName = "部门已删除";
+            } else {
+                Department department = queryDepartmentTemp.get();
+                departmentName = department.getName();
             }
-            User u = queryUserTemp.get();
 
             SimplePayment sp = new SimplePayment();
             sp.setApplyId(p.getId());
-            sp.setApplicantName(u.getName());
-            sp.setApplyTime(p.getApplyTime().toString());
-            sp.setStatus(p.getStatus());
-
-            response.getItems().add(sp);
-        }
-
-        return response;
-    }
-
-
-    public SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum) {
-        final User user = userDao.findById(userId).get();
-
-        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
-        Page<PaymentApplication> payments = paymentApplicationDao.findNeedCheckByUserId(userId, pageable);
-
-        // response: 返回值
-        SimplePaymentListResponse response = new SimplePaymentListResponse();
-        response.setItems(new ArrayList<SimplePayment>());
-
-        // 设置总数
-        response.setTotal((int) payments.getTotalElements());
-
-        for(var p:payments) {
-            // 需要查询申请人名字
-            var queryUserTemp = userDao.findById(p.getApplicantId());
-            if(queryUserTemp.isEmpty()) {
-                log.error("userId:" + p.getApplicantId() + " Not Found");
-                throw PaymentControllerException.UserNotFoundException;
-            }
-            User u = queryUserTemp.get();
-
-            SimplePayment sp = new SimplePayment();
-            sp.setApplyId(p.getId());
-            sp.setApplicantName(u.getName());
+            sp.setApplicantName(username);
+            sp.setDepartmentName(departmentName);
             sp.setApplyTime(p.getApplyTime().toString());
             sp.setStatus(p.getStatus());
 

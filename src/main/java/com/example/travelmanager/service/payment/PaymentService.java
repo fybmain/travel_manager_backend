@@ -12,5 +12,5 @@ public interface PaymentService {
 
     SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId);
 
-    SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum);
+    SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state);
 }
