@@ -35,11 +35,18 @@ public class PaymentApplicationController {
 
 
     // APIs
+    // 1.travelApply 判断是否通过
+    // 2. picture判断是否存在
+
+    // 3.判断travel的paid是否已经为true，已经为true则抛异常返回
+    // 4.提交了申请就把对应的travel的paid改成true, approve中申请没通过再改成false.
     @ApiOperation(value = "创建报销申请")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "创建成功 返回success 状态", response = ResultBean.class),
-            @ApiResponse(code = 403, message = "无权限", response = ResultBean.class),
-            @ApiResponse(code = 404, message = "未找到对应出差申请： {code = 1001, msg = The corresponding TravelApplication was not found}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "{code=1005, msg = TravelApplication not approved, can't add payment application} \n " +
+                    "{code = 4003 msg = This travel application have ongoing payment application already}", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "未找到对应出差申请： {code = 1001, msg = The corresponding TravelApplication was not found}" +
+                    "\n {code = 1006, msg = Picture NotFound}", response = ResultBean.class),
             @ApiResponse(code = 500, message = "未知错误", response = ResultBean.class)
     })
     @PostMapping("/application")
@@ -49,12 +56,7 @@ public class PaymentApplicationController {
         Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
         // 2. create PaymentApplication in database
-        try {
-            PaymentApplication paymentApplication = paymentService.createByPayload(paymentApplicationPayload, userId);
-        }
-        catch (RuntimeException e) {
-            throw e;
-        }
+        PaymentApplication paymentApplication = paymentService.createByPayload(paymentApplicationPayload, userId);
 
         return ResultBean.success(HttpStatus.CREATED);
     }
@@ -143,7 +145,8 @@ public class PaymentApplicationController {
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 403, message = "{code=4001, msg='application state is approved OR unapproved, can't modify'}\n" +
                     "{code=4002, msg=you can not approve this application now}", response = ResultBean.class),
-            @ApiResponse(code = 404, message = "{code=1002, msg='PaymentApplication not found'}", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "{code=1001 msg=Travel Application Not Found} \n " +
+                    "{code=1002, msg='PaymentApplication not found'}", response = ResultBean.class),
     })
     @PutMapping("/approval")
     @ResponseBody
