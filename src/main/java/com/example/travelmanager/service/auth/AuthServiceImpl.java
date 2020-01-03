@@ -9,6 +9,8 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.RegisterPayload;
+import com.example.travelmanager.payload.ResetPasswordPayload;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,6 @@ import java.util.Base64;
 import java.util.Date;
 
 @Service
-@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -86,6 +87,18 @@ public class AuthServiceImpl implements AuthService {
         tokenResponse.setUserInfo(userInfo);
 
         return tokenResponse;
+    }
+
+    @Override
+    public void resetPassword(int uid, ResetPasswordPayload resetPasswordPayload){
+        User user = userDao.findById(uid).get();
+        if (user.validPassword(resetPasswordPayload.getOldPassword())) {
+            user.setPassword(resetPasswordPayload.getNewPassword());
+        }
+        else {
+            throw AuthControllerException.OldPasswordErrorException;
+        }
+        userDao.save(user);
     }
 
     private static Token decryptToken(String tokenStr) {
