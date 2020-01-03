@@ -109,7 +109,7 @@ public class TravelApplicationController {
             @RequestParam(defaultValue = "8") int size
     ) {
         int uid = authService.authorize(auth);
-        TravelApplicationsResponse travelApplicationsResponse =  travelApplicationService.getTravelUnpaidApplication(uid,page, size, false);
+        TravelApplicationsResponse travelApplicationsResponse =  travelApplicationService.getTravelUnpaidApplication(uid,page, size);
         return ResultBean.success(travelApplicationsResponse);
     }
 
