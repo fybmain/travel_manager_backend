@@ -31,7 +31,7 @@ public class TravelApplicationController {
 
     @ApiOperation(value = "submit travel application", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class),
+            @ApiResponse(code = 201, message = "{code=0,msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=400,msg='bad request'};", response = ResultBean.class)
     })
     @PostMapping("/application")
