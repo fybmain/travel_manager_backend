@@ -29,7 +29,7 @@ public class TravelApplicationController {
     private TravelApplicationService travelApplicationService;
 
 
-    @ApiOperation(value = "travel application", response = ResultBean.class)
+    @ApiOperation(value = "submit travel application", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=400,msg='bad request'};", response = ResultBean.class)
@@ -62,15 +62,15 @@ public class TravelApplicationController {
     }
 
     @GetMapping("/applications/me")
-    @ApiOperation(value = "get all travel applications for current user", response = ResultBean.class)
+    @ApiOperation(value = "get travel applications of current login user", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
-            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = TravelApplicationsResponse.class)
+            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = ResultBean.class)
     })
     public HttpEntity getApplicationsMe(
             @RequestHeader(Constant.HEADER_STRING) String auth,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "8") int size,
             @ApiParam(value = "all, finished, unfinished")  @RequestParam(defaultValue = "All") String state
     ) {
         int uid = authService.authorize(auth);
@@ -79,17 +79,17 @@ public class TravelApplicationController {
     }
 
     @GetMapping("/applications")
-    @ApiOperation(value = "get all travel applications", response = ResultBean.class)
+    @ApiOperation(value = "(department) manager get all travel applications by department", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
-            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = TravelApplicationsResponse.class)
+            @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = ResultBean.class)
     })
     public HttpEntity getApplications(
             @RequestHeader(Constant.HEADER_STRING) String auth,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "8") int size,
             @ApiParam(value = "all, finished, unfinished")  @RequestParam(defaultValue = "All") String state,
-            @ApiParam(value = "departmentId") @RequestParam(defaultValue = "0") Integer departmentId
+            @ApiParam(value = "-1 for all department") @RequestParam(defaultValue = "-1") Integer departmentId
     ) {
         int uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager, UserRoleEnum.Admin);
 
@@ -99,6 +99,7 @@ public class TravelApplicationController {
     }
 
     @PutMapping("/approval")
+    @ApiOperation(value = "approve a travel application")
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 404, message = "{code=1001, msg='TravelApplication not found'}", response = ResultBean.class),
