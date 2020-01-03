@@ -12,7 +12,7 @@ import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
-import com.example.travelmanager.payload.TravelApprovalPayload;
+import com.example.travelmanager.payload.ApprovalPayload;
 import com.example.travelmanager.response.travel.SimpleTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,9 +133,9 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     }
 
     @Override
-    public void travelApproval(int uid,TravelApprovalPayload travelApprovalPayload) {
+    public void travelApproval(int uid, ApprovalPayload approvalPayload) {
         User user = userDao.findById(uid).get();
-        var query = travelApplicationDao.findById(travelApprovalPayload.getApplyId());
+        var query = travelApplicationDao.findById(approvalPayload.getApplyId());
         if (query.isEmpty()) {
             throw TravelControllerException.TravelApplicationNotFoundException;
         }
@@ -144,7 +144,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             if (user.getRole() != UserRoleEnum.DepartmentManager.getRoleId() || user.getDepartmentId() != travelApplication.getDepartmentId()) {
                 throw TravelControllerException.TravelApplicationForbiddenException;
             }
-            if (travelApprovalPayload.getApproved() == true) {
+            if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
             }
             else {
@@ -156,7 +156,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             if (user.getRole() != UserRoleEnum.Manager.getRoleId()) {
                 throw TravelControllerException.TravelApplicationForbiddenException;
             }
-            if (travelApprovalPayload.getApproved() == true) {
+            if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
             }
             else {

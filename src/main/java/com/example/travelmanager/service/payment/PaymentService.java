@@ -8,9 +8,11 @@ import com.example.travelmanager.response.payment.SimplePaymentListResponse;
 public interface PaymentService {
     PaymentApplication createByPayload(PaymentApplicationPayload payload, Integer userId);
 
-    PaymentApplicationResponse getById(Integer Id);
+    PaymentApplicationResponse getById(Integer userId, Integer applicationId);
 
     SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId);
 
     SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state);
+
+    void approve(Integer userId, Integer applicationId, Boolean approved);
 }

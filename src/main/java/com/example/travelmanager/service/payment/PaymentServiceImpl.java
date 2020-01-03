@@ -2,6 +2,7 @@ package com.example.travelmanager.service.payment;
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.WebException.BadRequestException;
+import com.example.travelmanager.config.WebException.ForbiddenException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.dao.*;
 import com.example.travelmanager.entity.*;
@@ -11,6 +12,7 @@ import com.example.travelmanager.payload.PaymentApplicationPayload;
 import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import com.example.travelmanager.response.payment.SimplePayment;
 import com.example.travelmanager.response.payment.SimplePaymentListResponse;
+import javafx.application.Application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -89,13 +91,20 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentApplication;
     }
 
-    public PaymentApplicationResponse getById(Integer Id) {
-        // TODO 权限检查
-        var queryTemp = paymentApplicationDao.findById(Id);
-        if(queryTemp.isEmpty()) {
+    public PaymentApplicationResponse getById(Integer userId, Integer applicationId) {
+        // 查询用户
+        var userQuery = userDao.findById(userId);
+        if(userQuery.isEmpty()) {
+            throw PaymentControllerException.UserNotFoundException;
+        }
+        User uQuery = userQuery.get();
+
+
+        var applicationQuery = paymentApplicationDao.findById(applicationId);
+        if(applicationQuery.isEmpty()) {
             throw PaymentControllerException.PaymentApplicationNotFoundException;
         }
-        PaymentApplication paymentApplication = queryTemp.get();
+        PaymentApplication paymentApplication = applicationQuery.get();
 
         // 找到对应用户
         var queryTemp2 = userDao.findById(paymentApplication.getApplicantId());
@@ -103,6 +112,21 @@ public class PaymentServiceImpl implements PaymentService {
             throw PaymentControllerException.UserNotFoundException;
         }
         User applicant = queryTemp2.get();
+
+        // 权限检查
+        // 普通用户只看自己的
+        if(uQuery.getRole() == UserRoleEnum.Employee.getRoleId()) {
+            if(!uQuery.getId().equals(applicant.getId())) {
+                throw PaymentControllerException.GetApplicationForbiddenException;
+            }
+        } else if(uQuery.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+            // 部门经理看本部门的
+            if(!uQuery.getDepartmentId().equals(applicant.getDepartmentId())) {
+                throw PaymentControllerException.GetApplicationForbiddenException;
+            }
+        }
+        // 经理全权限，不做筛查
+
 
         // 找到对应Travel
         var queryTemp3 = travelApplicationDao.findById(paymentApplication.getTravelId());
@@ -256,5 +280,48 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         return response;
+    }
+
+    public void approve(Integer userId, Integer applicationId, Boolean approved) {
+        User u = userDao.findById(userId).get();
+
+        var applicationQuery = paymentApplicationDao.findById(applicationId);
+        if(applicationQuery.isEmpty()) {
+            throw PaymentControllerException.PaymentApplicationNotFoundException;
+        }
+        PaymentApplication application = applicationQuery.get();
+
+        // 状态为已经固定了
+        if(application.getStatus() == ApplicationStatusEnum.ApplicationApproved.getStatus() || application.getStatus() == ApplicationStatusEnum.ApplicationNotApproved.getStatus()) {
+            throw PaymentControllerException.ApplicationStateCanNotModifyException;
+        }
+
+        // 以下为approve情况
+        if(application.getStatus() == ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus()) {
+            if(u.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+                if(approved){
+                    application.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
+                }
+                else {
+                    application.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                }
+                paymentApplicationDao.save(application);
+            } else {
+                throw PaymentControllerException.ApplicationCanNotApproveException;
+            }
+        }
+        else if(application.getStatus() == ApplicationStatusEnum.NeedManagerApprove.getStatus()) {
+            if(u.getRole() == UserRoleEnum.Manager.getRoleId()) {
+                if(approved) {
+                    application.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
+                } else {
+                    application.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                }
+                paymentApplicationDao.save(application);
+            } else {
+                throw PaymentControllerException.ApplicationCanNotApproveException;
+            }
+        }
+
     }
 }

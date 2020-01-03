@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class TravelApprovalPayload {
+public class ApprovalPayload {
     @Getter @Setter
     @ApiModelProperty @NotNull
     private Boolean approved;

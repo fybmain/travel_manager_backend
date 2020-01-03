@@ -5,6 +5,7 @@ import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.PaymentApplicationDao;
 import com.example.travelmanager.entity.PaymentApplication;
 import com.example.travelmanager.enums.UserRoleEnum;
+import com.example.travelmanager.payload.ApprovalPayload;
 import com.example.travelmanager.payload.PaymentApplicationPayload;
 import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import com.example.travelmanager.response.payment.SimplePaymentListResponse;
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -61,7 +63,7 @@ public class PaymentApplicationController {
     @ApiOperation(value = "报销申请详情信息")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "获取成功", response = PaymentApplicationResponse.class),
-            @ApiResponse(code = 403, message = "无权限", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "用户无查看该申请的权限.", response = ResultBean.class),
             @ApiResponse(code = 404, message = "未找到对应出差申请：未找到该报销申请中的出差申请: {code = 1001, msg = ...} \n " +
                                                "未找到该报销申请: {code=1002, msg = ...} \n  " +
                                                "未找到该用户： {code=1003, msg = ...}        ", response = ResultBean.class),
@@ -69,19 +71,20 @@ public class PaymentApplicationController {
     })
     @GetMapping("/application")
     @ResponseBody
-    public ResponseEntity get(@RequestHeader(Constant.HEADER_STRING) String auth, @RequestParam Integer id) {
+    public ResponseEntity get(@RequestHeader(Constant.HEADER_STRING) String auth, @RequestParam Integer applyId) {
         // 验证token
         Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
-        PaymentApplicationResponse response = paymentService.getById(id);
+        PaymentApplicationResponse response = paymentService.getById(userId, applyId);
 
         return ResultBean.success(response);
     }
 
 
-    @ApiOperation(value = "报销申请列表.")
+    @ApiOperation(value = "获取报销申请列表. ")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "获取成功", response = SimplePaymentListResponse.class),
+            @ApiResponse(code = 400, message = "请求参数错误 {code=3001 msg=state params error} {code=3002 msg = departmentId should >= -1}", response = ResultBean.class),
             @ApiResponse(code = 403, message = "无权限", response = ResultBean.class),
             @ApiResponse(code = 404, message = "未找到该用户： {code=1003, msg = ...}", response = ResultBean.class),
             @ApiResponse(code = 500, message = "未知错误", response = ResultBean.class)
@@ -108,7 +111,13 @@ public class PaymentApplicationController {
     }
 
 
-    // TODO: API 文档  Approve
+    @ApiOperation(value = "获取当前用户的报销申请列表.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "获取成功", response = SimplePaymentListResponse.class),
+            @ApiResponse(code = 400, message = "请求参数错误 {code=3001 msg=state params error} {code=3002 msg = departmentId should >= -1}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "无权限", response = ResultBean.class),
+            @ApiResponse(code = 500, message = "未知错误", response = ResultBean.class)
+    })
     @GetMapping("/applications/me")
     @ResponseBody
     public ResponseEntity listMyUncheck(@RequestHeader(Constant.HEADER_STRING) String auth,
@@ -126,5 +135,24 @@ public class PaymentApplicationController {
         SimplePaymentListResponse response = paymentService.listMyApplications(userId, size, page, state);
 
         return ResultBean.success(response);
+    }
+
+
+    @ApiOperation(value = "审核一个报销申请")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "{code=4001, msg='application state is approved OR unapproved, can't modify'}\n" +
+                    "{code=4002, msg=you can not approve this application now}", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "{code=1002, msg='PaymentApplication not found'}", response = ResultBean.class),
+    })
+    @PutMapping("/approval")
+    @ResponseBody
+    public ResponseEntity approve(@RequestHeader(Constant.HEADER_STRING) String auth,
+                                 @Validated @RequestBody ApprovalPayload approvalPayload) {
+        Integer uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+
+        paymentService.approve(uid, approvalPayload.getApplyId(), approvalPayload.getApproved());
+
+        return ResultBean.success();
     }
 }
