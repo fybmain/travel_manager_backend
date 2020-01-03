@@ -1,15 +1,7 @@
 package com.example.travelmanager.service.image;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
-import com.aliyun.oss.model.CompleteMultipartUploadResult;
-import com.aliyun.oss.model.UploadFileRequest;
-import com.aliyun.oss.model.UploadFileResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

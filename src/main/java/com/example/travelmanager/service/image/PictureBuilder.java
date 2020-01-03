@@ -3,7 +3,6 @@ package com.example.travelmanager.service.image;
 import com.example.travelmanager.dao.PictureDao;
 import com.example.travelmanager.entity.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 

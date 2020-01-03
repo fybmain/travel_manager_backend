@@ -4,7 +4,6 @@ import com.example.travelmanager.config.WebException.ErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Collection;
 
 // https://juejin.im/post/5c3ea92a5188251e101598aa#heading-6
 public class ResultBean<T> {

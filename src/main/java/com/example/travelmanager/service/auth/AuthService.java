@@ -1,6 +1,5 @@
 package com.example.travelmanager.service.auth;
 
-import com.example.travelmanager.config.WebException.AuthControllerException;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.RegisterPayload;

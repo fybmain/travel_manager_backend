@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 
+@Data
 public class SimplePaymentListResponse {
     @Setter @Getter
     Integer total;
