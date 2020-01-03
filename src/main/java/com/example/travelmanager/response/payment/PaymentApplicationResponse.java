@@ -3,7 +3,6 @@ package com.example.travelmanager.response.payment;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class PaymentApplicationResponse {
 

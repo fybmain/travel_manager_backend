@@ -1,8 +1,6 @@
 package com.example.travelmanager.service.payment;
 
 import com.example.travelmanager.config.Constant;
-import com.example.travelmanager.config.WebException.BadRequestException;
-import com.example.travelmanager.config.WebException.ForbiddenException;
 import com.example.travelmanager.config.WebException.PaymentControllerException;
 import com.example.travelmanager.dao.*;
 import com.example.travelmanager.entity.*;
@@ -12,7 +10,6 @@ import com.example.travelmanager.payload.PaymentApplicationPayload;
 import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import com.example.travelmanager.response.payment.SimplePayment;
 import com.example.travelmanager.response.payment.SimplePaymentListResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +23,6 @@ import java.util.HashSet;
 
 // TravelApplicationException 出差申请不存在
 @Service
-@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
