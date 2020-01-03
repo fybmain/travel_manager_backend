@@ -37,6 +37,14 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     private DepartmentDao departmentDao;
 
     @Override
+    public TravelApplicationsResponse getTravelUnpaidApplication(int uid, int page, int size, Boolean paid) {
+        page = (page > 0) ? (page - 1) : 0;
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
+        Page<TravelApplication> travelApplications = travelApplicationDao.findAllUnpaid(paid, uid, pageable);
+        return pageApplications(travelApplications);
+    }
+
+    @Override
     public TravelApplicationsResponse getTravelApplicationsByDepartmentId(int uid, int page, int size, String state, int departmentId) {
         page = (page > 0) ? (page - 1) : 0;
 
