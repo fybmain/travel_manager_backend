@@ -98,6 +98,21 @@ public class TravelApplicationController {
         return ResultBean.success(travelApplicationsResponse);
     }
 
+    @ApiOperation(value = "获取未报销的出差申请", response = ResultBean.class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
+    })
+    @GetMapping("/applications/unpaid")
+    public HttpEntity getUnpaidApplications(
+            @RequestHeader(Constant.HEADER_STRING) String auth,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        int uid = authService.authorize(auth);
+        TravelApplicationsResponse travelApplicationsResponse =  travelApplicationService.getTravelUnpaidApplication(uid,page, size, false);
+        return ResultBean.success(travelApplicationsResponse);
+    }
+
     @PutMapping("/approval")
     @ApiOperation(value = "审核出差申请")
     @ApiResponses({

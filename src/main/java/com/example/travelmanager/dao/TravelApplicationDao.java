@@ -19,4 +19,7 @@ public interface TravelApplicationDao extends CrudRepository<TravelApplication, 
 
     @Query("select t from TravelApplication t where t.status in :statusSet")
     Page<TravelApplication> findAllByStatus(@Param("statusSet") Set<Integer>statusSet, Pageable pageable);
+
+    @Query("select t from TravelApplication t where t.paid = :paid and t.applicantId = :uid")
+    Page<TravelApplication> findAllUnpaid(@Param("paid") Boolean paid, @Param("uid") Integer uid, Pageable pageable);
 }
