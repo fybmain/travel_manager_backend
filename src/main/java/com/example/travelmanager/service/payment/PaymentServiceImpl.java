@@ -60,8 +60,20 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         paymentApplication.setTravelId(payload.getTravelApplyId());
-        if (travelApplicationDao.findById(payload.getTravelApplyId()).isEmpty()) {
+        var querytravel = travelApplicationDao.findById(payload.getTravelApplyId());
+        if(querytravel.isEmpty()) {
             throw PaymentControllerException.TravelApplicationNotFoundException;
+        }
+
+        var travelApplication = querytravel.get();
+        // travel申请未通过
+        if(travelApplication.getStatus() != ApplicationStatusEnum.ApplicationApproved.getStatus()) {
+            throw PaymentControllerException.TravelApplicationNotApprovedException;
+        }
+
+        // 已经为true，说明该出差申请有其他报销申请，且还未通过，抛出异常
+        if(travelApplication.getPaid()) {
+            throw PaymentControllerException.DuplicatePaymentApplicationException;
         }
 
 
@@ -69,7 +81,11 @@ public class PaymentServiceImpl implements PaymentService {
         String URLStrings = "";
         ArrayList<Integer> pictureIds = payload.getPictureIds();
         for(Integer i : pictureIds) {
-            Picture picture = pictureDao.findById(i).get();
+            var pictureQuery = pictureDao.findById(i);
+            if(pictureQuery.isEmpty()) {
+                throw PaymentControllerException.PictureNotFoundException;
+            }
+            Picture picture = pictureQuery.get();
             URLStrings = URLStrings + picture.getUrl();
             // 不是最后一个元素，则加 " " 空格
             if(i != pictureIds.get(pictureIds.size()-1)) {
@@ -86,6 +102,10 @@ public class PaymentServiceImpl implements PaymentService {
         System.out.println(paymentApplication.toString());
 
         paymentApplicationDao.save(paymentApplication);
+
+        // 将travel 的paid 改为true
+        travelApplication.setPaid(true);
+        travelApplicationDao.save(travelApplication);
 
         return paymentApplication;
     }
@@ -290,6 +310,12 @@ public class PaymentServiceImpl implements PaymentService {
         }
         PaymentApplication application = applicationQuery.get();
 
+        // 查询对应travel，判断是否存在
+        var travelQuery = travelApplicationDao.findById(application.getTravelId());
+        if(travelQuery.isEmpty()) {
+            throw PaymentControllerException.TravelApplicationNotFoundException;
+        }
+
         // 状态为已经固定了
         if(application.getStatus() == ApplicationStatusEnum.ApplicationApproved.getStatus() || application.getStatus() == ApplicationStatusEnum.ApplicationNotApproved.getStatus()) {
             throw PaymentControllerException.ApplicationStateCanNotModifyException;
@@ -320,6 +346,13 @@ public class PaymentServiceImpl implements PaymentService {
             } else {
                 throw PaymentControllerException.ApplicationCanNotApproveException;
             }
+        }
+
+        // 申请未通过，设置travel的为false
+        if(application.getStatus() == ApplicationStatusEnum.ApplicationNotApproved.getStatus()) {
+            TravelApplication travelApplication = travelQuery.get();
+            travelApplication.setPaid(false);
+            travelApplicationDao.save(travelApplication);
         }
 
     }
