@@ -29,7 +29,7 @@ public class TravelApplicationController {
     private TravelApplicationService travelApplicationService;
 
 
-    @ApiOperation(value = "submit travel application", response = ResultBean.class)
+    @ApiOperation(value = "提交报销申请", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 201, message = "{code=0,msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=400,msg='bad request'};", response = ResultBean.class)
@@ -45,7 +45,7 @@ public class TravelApplicationController {
         return ResultBean.success(HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "get a travel application", response = ResultBean.class)
+    @ApiOperation(value = "获取一个报销申请（通过申请ID）", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplication.class),
             @ApiResponse(code = 404, message = "{code=1001, msg='TravelApplication not found'}", response = ResultBean.class),
@@ -62,7 +62,7 @@ public class TravelApplicationController {
     }
 
     @GetMapping("/applications/me")
-    @ApiOperation(value = "get travel applications of current login user", response = ResultBean.class)
+    @ApiOperation(value = "获取当前用户的提交申请列表", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
             @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = ResultBean.class)
@@ -79,7 +79,7 @@ public class TravelApplicationController {
     }
 
     @GetMapping("/applications")
-    @ApiOperation(value = "(department) manager get all travel applications by department", response = ResultBean.class)
+    @ApiOperation(value = "经理、部门经理获取申请列表", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplicationsResponse.class),
             @ApiResponse(code = 400, message = "{code=1003, msg='state must be Finished, Unfinished or All'}", response = ResultBean.class)
@@ -99,7 +99,7 @@ public class TravelApplicationController {
     }
 
     @PutMapping("/approval")
-    @ApiOperation(value = "approve a travel application")
+    @ApiOperation(value = "审核出差申请")
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 404, message = "{code=1001, msg='TravelApplication not found'}", response = ResultBean.class),

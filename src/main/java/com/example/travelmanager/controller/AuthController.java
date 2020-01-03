@@ -27,7 +27,7 @@ public class AuthController {
     private UserDao userDao;
 
     @PostMapping("/token")
-    @ApiOperation(value = "get token", response = ResultBean.class)
+    @ApiOperation(value = "获取token", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
             @ApiResponse(code = 401, message = "username or password incorrect", response = ResultBean.class)
@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @GetMapping("/token")
-    @ApiOperation(value = "refresh token", response = ResultBean.class)
+    @ApiOperation(value = "刷新token", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
             @ApiResponse(code = 401, message = "not a valid token", response = ResultBean.class)
@@ -54,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @ApiOperation(value = "register a new user", response = ResultBean.class)
+    @ApiOperation(value = "注册新用户", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 201, message = "{code=0,msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=1001,msg='work id exists'}", response = ResultBean.class)
