@@ -12,7 +12,6 @@ import com.example.travelmanager.payload.PaymentApplicationPayload;
 import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import com.example.travelmanager.response.payment.SimplePayment;
 import com.example.travelmanager.response.payment.SimplePaymentListResponse;
-import javafx.application.Application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
