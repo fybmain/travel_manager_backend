@@ -1,5 +1,6 @@
 package com.example.travelmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class PaymentApplication {
 
     @Getter @Setter
     @Column(nullable = false) @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date applyTime;
 
     @Getter @Setter
