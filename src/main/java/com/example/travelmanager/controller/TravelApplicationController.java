@@ -5,7 +5,7 @@ import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.entity.TravelApplication;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
-import com.example.travelmanager.payload.TravelApprovalPayload;
+import com.example.travelmanager.payload.ApprovalPayload;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import com.example.travelmanager.service.TravelApplication.TravelApplicationService;
 import com.example.travelmanager.service.auth.AuthService;
@@ -107,10 +107,10 @@ public class TravelApplicationController {
     })
     public HttpEntity travelApproval(
             @RequestHeader(Constant.HEADER_STRING) String auth,
-            @Validated @RequestBody TravelApprovalPayload travelApprovalPayload
+            @Validated @RequestBody ApprovalPayload approvalPayload
     ){
         int uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
-        travelApplicationService.travelApproval(uid, travelApprovalPayload);
+        travelApplicationService.travelApproval(uid, approvalPayload);
         return ResultBean.success();
     }
 }
