@@ -24,15 +24,16 @@ public class WebExceptionHandler {
     private EmailService emailSetvice;
 
     @ExceptionHandler
-    public ResponseEntity unknownExceptionHandler(Exception e) {
+    public ResponseEntity unknownExceptionHandler(NumberFormatException e) {
         logger.error("发生了未知异常", e);
+    
         StackTraceElement[] stackTraceElements =  e.getStackTrace();
         String traceString = new String();
         for (StackTraceElement stackTraceElement : stackTraceElements) {
             traceString += "\n"  + stackTraceElement.toString();
         }
         // 发送邮件通知技术人员.
-        emailSetvice.sendSimpleMail("Chenglei.Y@outlook.com;504490160@qq.com", e.getMessage(), traceString);
+        // emailSetvice.sendSimpleMail("Chenglei.Y@outlook.com;504490160@qq.com", e.getMessage(), traceString);
         
         return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, e.getMessage());
     }
