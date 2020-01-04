@@ -2,6 +2,7 @@ package com.example.travelmanager.service.auth;
 
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
+import com.example.travelmanager.payload.EditUserPaylod;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
 
@@ -18,4 +19,6 @@ public interface AuthService {
     int authorize(String tokenString);
 
     void resetPassword(int uid, ResetPasswordPayload resetPasswordPayload);
+
+    void editUser(int uid, EditUserPaylod editUserPaylod);
 }

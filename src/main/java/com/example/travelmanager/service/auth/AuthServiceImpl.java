@@ -9,6 +9,7 @@ import com.example.travelmanager.dao.DepartmentDao;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
+import com.example.travelmanager.payload.EditUserPaylod;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
 
@@ -111,6 +112,25 @@ public class AuthServiceImpl implements AuthService {
         }
         else {
             throw AuthControllerException.OldPasswordErrorException;
+        }
+        userDao.save(user);
+    }
+
+    @Override
+    public void editUser(int uid, EditUserPaylod editUserPaylod) {
+        User user = userDao.findById(uid).get();
+        String email = editUserPaylod.getEmail();
+        String phone = editUserPaylod.getTelephone();
+        String name = editUserPaylod.getName();
+
+        if (name != null && !(email.isEmpty() || email.isBlank())){
+            user.setEmail(email);
+        }
+        if (phone != null && !(phone.isEmpty() || phone.isBlank())){
+            user.setTelephone(phone);
+        }
+        if (name != null && !(name.isEmpty() || name.isBlank())){
+            user.setName(name);
         }
         userDao.save(user);
     }
