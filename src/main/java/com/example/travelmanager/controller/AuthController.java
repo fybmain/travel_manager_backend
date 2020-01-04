@@ -4,6 +4,7 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
+import com.example.travelmanager.payload.EditUserPaylod;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
@@ -78,6 +79,20 @@ public class AuthController {
     ){
         int uid = authService.authorize(auth);
         authService.resetPassword(uid, resetPasswordPayload);
+        return ResultBean.success();
+    }
+
+    @PutMapping("/user")
+    @ApiOperation(value = "修改用户信息", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class)
+    })
+    public HttpEntity editUser(
+        @RequestHeader(Constant.HEADER_STRING) String auth,
+        @RequestBody EditUserPaylod editUserPaylod
+    ){
+        int uid = authService.authorize(auth);
+        authService.editUser(uid, editUserPaylod);
         return ResultBean.success();
     }
 }

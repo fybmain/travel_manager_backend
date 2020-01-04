@@ -57,7 +57,8 @@ public class AdminController {
     @ApiOperation(value = "审核用户账号", response = ResultBean.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
-        @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class)
+        @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class),
+        @ApiResponse(code = 400, message = "{code=1002,msg='用户不能被修改'}", response = ResultBean.class)
     })
     public HttpEntity approveUser(
         @RequestHeader(Constant.HEADER_STRING) String auth,
