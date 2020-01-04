@@ -20,6 +20,9 @@ public class UserInfo {
     @Getter @Setter
     private Integer departmentId;
 
+    @Getter @Setter
+    private String departmentName;
+
     public UserInfo() { }
 
     public UserInfo(User user) {

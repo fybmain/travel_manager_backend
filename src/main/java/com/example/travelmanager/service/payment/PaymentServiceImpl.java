@@ -2,7 +2,7 @@ package com.example.travelmanager.service.payment;
 
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
-import com.example.travelmanager.config.WebException.PaymentControllerException;
+import com.example.travelmanager.config.exception.PaymentControllerException;
 import com.example.travelmanager.dao.*;
 import com.example.travelmanager.entity.*;
 import com.example.travelmanager.enums.ApplicationStatusEnum;

@@ -1,6 +1,6 @@
 package com.example.travelmanager.controller;
 
-import com.example.travelmanager.config.WebException.*;
+import com.example.travelmanager.config.exception.*;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.service.email.EmailService;
 

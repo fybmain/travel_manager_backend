@@ -1,4 +1,4 @@
-package com.example.travelmanager.config.WebException;
+package com.example.travelmanager.config.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -3,7 +3,7 @@ package com.example.travelmanager.controller;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.UserDao;
-import com.example.travelmanager.entity.User;
+import com.example.travelmanager.payload.EditUserPaylod;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
@@ -25,34 +25,28 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private UserDao userDao;
-
     @PostMapping("/token")
     @ApiOperation(value = "获取token", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
-            @ApiResponse(code = 401, message = "username or password incorrect", response = ResultBean.class)
+            @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
+            @ApiResponse(code = 401, message = "{code=1003, msg='用户名或密码错误'}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity GetToken(@Validated @RequestBody LoginPayload loginPayload) {
-        User user = userDao.findByWorkId(loginPayload.getWorkId());
-        if (user == null || !user.validPassword(loginPayload.getPassword())) {
-            return ResultBean.error(HttpStatus.UNAUTHORIZED, 401, "username or password incorrect");
-        }
-        TokenResponse token = authService.generateTokenResponse(user);
+        TokenResponse token = authService.getToken(loginPayload);
         return ResultBean.success(token);
     }
 
     @GetMapping("/token")
     @ApiOperation(value = "刷新token", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "code = 0", response = TokenResponse.class),
-            @ApiResponse(code = 401, message = "not a valid token", response = ResultBean.class)
+        @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
+        @ApiResponse(code = 401, message = "{code=401, msg='token不合法或者已过期'}", response = ResultBean.class),
+        @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity refreshToken(@RequestHeader(Constant.HEADER_STRING) String auth) {
-        int uid = authService.authorize(auth);
-        User user = userDao.findById(uid).get();
-        return ResultBean.success((authService.generateTokenResponse(user)));
+        authService.authorize(auth);
+        return ResultBean.success((authService.refershToken(auth)));
     }
 
     @PostMapping("/register")
@@ -78,6 +72,20 @@ public class AuthController {
     ){
         int uid = authService.authorize(auth);
         authService.resetPassword(uid, resetPasswordPayload);
+        return ResultBean.success();
+    }
+
+    @PutMapping("/user")
+    @ApiOperation(value = "修改用户信息", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class)
+    })
+    public HttpEntity editUser(
+        @RequestHeader(Constant.HEADER_STRING) String auth,
+        @RequestBody EditUserPaylod editUserPaylod
+    ){
+        int uid = authService.authorize(auth);
+        authService.editUser(uid, editUserPaylod);
         return ResultBean.success();
     }
 }
