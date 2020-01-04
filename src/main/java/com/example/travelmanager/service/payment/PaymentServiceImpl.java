@@ -256,7 +256,7 @@ public class PaymentServiceImpl implements PaymentService {
         final User user = userDao.findById(userId).get();
         
         // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
-        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
+        Set<Integer> statusSet = Constant.getStatusSet(state, UserRoleEnum.Employee.getRoleId());
         if(statusSet == null) {
             throw PaymentControllerException.StateParamErrorException;
         }
