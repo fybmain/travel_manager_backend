@@ -78,7 +78,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         page = (page > 0) ? (page - 1) : 0;
         User user = userDao.findById(uid).get();
 
-        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
+        Set<Integer> statusSet = Constant.getStatusSet(state, UserRoleEnum.Employee.getRoleId());
         if(statusSet == null) {
             throw TravelControllerException.GetApplicationsStateErrorException;
         }
