@@ -1,3 +1,6 @@
+### MacOS ###
+.DS_Store
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -34,3 +37,7 @@ build/
 ### local shell tool ###
 pr
 run
+
+### python
+*.pyc
+#/venv/

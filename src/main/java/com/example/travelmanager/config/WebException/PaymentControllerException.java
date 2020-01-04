@@ -38,7 +38,7 @@ public class PaymentControllerException extends ErrorException {
     public static final PaymentControllerException ApplicationStateCanNotModifyException = new PaymentControllerException(ApplicationStateCanNotModify, "application state is approved OR unapproved, can't modify", HttpStatus.FORBIDDEN);
 
     private static final Integer ApplicationCanNotApprove = 4002;
-    public static final PaymentControllerException ApplicationCanNotApproveException = new PaymentControllerException(ApplicationCanNotApprove, "you can not approve this application now", HttpStatus.FORBIDDEN);
+    public static final PaymentControllerException ApplicationCanNotApproveException = new PaymentControllerException(ApplicationCanNotApprove, "you don't have enough privilege to approve this application now", HttpStatus.FORBIDDEN);
 
     private static final Integer DuplicatePaymentApplication = 4003;
     public static final PaymentControllerException DuplicatePaymentApplicationException = new PaymentControllerException(DuplicatePaymentApplication, "This travel application have ongoing payment application already", HttpStatus.FORBIDDEN);
