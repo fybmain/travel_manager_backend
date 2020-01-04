@@ -1,6 +1,6 @@
 package com.example.travelmanager.controller;
 
-import com.example.travelmanager.config.WebException.PaymentControllerException;
+import com.example.travelmanager.config.exception.PaymentControllerException;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.entity.Picture;
 import com.example.travelmanager.response.image.ImageUploadResponse;

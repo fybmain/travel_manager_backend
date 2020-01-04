@@ -2,9 +2,10 @@ package com.example.travelmanager.service.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
-import com.example.travelmanager.config.WebException.AuthControllerException;
-import com.example.travelmanager.config.WebException.ForbiddenException;
-import com.example.travelmanager.config.WebException.UnauthorizedException;
+import com.example.travelmanager.config.exception.AuthControllerException;
+import com.example.travelmanager.config.exception.ForbiddenException;
+import com.example.travelmanager.config.exception.UnauthorizedException;
+import com.example.travelmanager.dao.DepartmentDao;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
@@ -27,6 +28,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private DepartmentDao departmentDao;
+
     @Override
     public int authorize(String tokenString) {
         Token token = decryptToken(tokenString);
@@ -36,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return token.getId();
     }
+
     @Override
     public int authorize(String tokenString, UserRoleEnum... userRoleEnums) {
         Token token = decryptToken(tokenString);
@@ -66,17 +71,27 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(registerPayload.getPassword());
         user.setWorkId(registerPayload.getWorkId());
         user.setRole(UserRoleEnum.Employee.getRoleId());
-        user.setStatus(true);
+        user.setStatus(false);
         userDao.save(user);
     }
 
     @Override
     public TokenResponse generateTokenResponse(User user) {
         UserInfo userInfo = new UserInfo(user);
+        Integer departmetnId = user.getDepartmentId();
+        userInfo.setDepartmentName("未知部门");
+
+        if (departmetnId != null) {
+            var query = departmentDao.findById(user.getDepartmentId());
+            if (! query.isEmpty()) {
+                userInfo.setDepartmentName(query.get().getName());
+            }
+        }
 
         Token token = new Token();
         token.setId(user.getId());
         token.setUserInfo(userInfo);
+        
         Date expire = new Date(new Date().getTime() + Constant.ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
         token.setExpire(expire);
 

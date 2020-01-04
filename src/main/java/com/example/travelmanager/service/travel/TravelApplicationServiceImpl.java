@@ -1,8 +1,8 @@
-package com.example.travelmanager.service.TravelApplication;
+package com.example.travelmanager.service.travel;
 
 import com.example.travelmanager.config.Constant;
-import com.example.travelmanager.config.WebException.BadRequestException;
-import com.example.travelmanager.config.WebException.TravelControllerException;
+import com.example.travelmanager.config.exception.BadRequestException;
+import com.example.travelmanager.config.exception.TravelControllerException;
 import com.example.travelmanager.dao.DepartmentDao;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
