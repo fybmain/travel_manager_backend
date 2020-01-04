@@ -10,7 +10,7 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.Department;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.response.admin.UsersResponse;
-import com.example.travelmanager.response.admin.DetailUser;;
+import com.example.travelmanager.response.admin.DetailUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

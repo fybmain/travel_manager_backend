@@ -1,4 +1,4 @@
-package com.example.travelmanager.service.TravelApplication;
+package com.example.travelmanager.service.travel;
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.WebException.BadRequestException;

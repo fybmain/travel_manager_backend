@@ -1,4 +1,4 @@
-package com.example.travelmanager.service.TravelApplication;
+package com.example.travelmanager.service.travel;
 
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.ApprovalPayload;
