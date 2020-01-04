@@ -59,6 +59,12 @@ class Mocker:
         return nid
 
 
+    def update_department_manager(self, manager_id, department_id):
+        sql = ("UPDATE department SET manager_id = {} WHERE department_id = {}".format(manager_id, department_id))
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        self.conn.commit()
+
     def insert_picture(self, url):
         nid = self.get_next_id("picture")+1
         time = "2016-01-01"

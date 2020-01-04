@@ -38,10 +38,15 @@ def main():
     # 管理员
     mocker.insert_user(0, UserRole.Admin)
 
+    # 总经理 & 总经理办公室
     manager_id = mocker.insert_user(1, UserRole.Manager)
     department_id = mocker.insert_department(manager_id, "总办")
     mocker.update_user_departmentId(department_id, manager_id)
 
+    # 5个部门
+    departs = ["云计算事业部", "物联网事业部", "互动娱乐事业部", "网络媒体事业部", "广告事业部"]
+    for d in departs:
+        print(d)
 
 if __name__ == '__main__':
     main()
