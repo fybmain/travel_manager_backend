@@ -39,4 +39,4 @@ run
 
 ### python
 *.pyc
-/venv/
+#/venv/
