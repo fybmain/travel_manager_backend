@@ -10,6 +10,7 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.EditUserPaylod;
+import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
 
@@ -77,7 +78,29 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponse generateTokenResponse(User user) {
+    public TokenResponse getToken(LoginPayload loginPayload) {
+        User user = userDao.findByWorkId(loginPayload.getWorkId());
+        if (user == null || !user.validPassword(loginPayload.getPassword())) {
+            throw AuthControllerException.workIdOrPasswordErrorException;
+        }
+        return generateTokenResponse(user);
+    }
+
+    @Override
+    public TokenResponse refershToken(String tokenStr) {
+        Token token = decryptToken(tokenStr);
+        var userQuery = userDao.findById(token.getId());
+        if (userQuery.isEmpty()) {
+            throw new UnauthorizedException();
+        }
+        return generateTokenResponse(userQuery.get());
+    }
+
+    private TokenResponse generateTokenResponse(User user) {
+        if(!user.getStatus()) {
+            throw AuthControllerException.notAllowedLoginErrorException;
+        }
+        
         UserInfo userInfo = new UserInfo(user);
         Integer departmetnId = user.getDepartmentId();
         userInfo.setDepartmentName("未知部门");
