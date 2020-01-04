@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
@@ -13,12 +15,17 @@ import com.example.travelmanager.response.admin.UsersResponse;
 import com.example.travelmanager.service.admin.AdminService;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.enums.UserRoleEnum;
+import com.example.travelmanager.payload.ApproveUserPayload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -38,12 +45,28 @@ public class AdminController {
     public HttpEntity getUsers(
         @RequestHeader(Constant.HEADER_STRING) String auth,
         @RequestParam(defaultValue = "1") Integer page,
-        @RequestParam(defaultValue = "8") Integer size
+        @RequestParam(defaultValue = "8") Integer size,
+        @ApiParam("true已审批账户，false未审批账户") @RequestParam(defaultValue = "false") Boolean enable
     ) {
         authService.authorize(auth, UserRoleEnum.Admin);
-        UsersResponse usersResponse = adminService.getUsers(page, size);
+        UsersResponse usersResponse = adminService.getUsers(enable, page, size);
         return ResultBean.success(usersResponse);
     }
     
-
+    @PutMapping(value="/user/approval")
+    @ApiOperation(value = "审核用户账号", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
+        @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class)
+    })
+    public HttpEntity approveUser(
+        @RequestHeader(Constant.HEADER_STRING) String auth,
+        @Validated @RequestBody ApproveUserPayload approveUserPayload
+    ) {
+        authService.authorize(auth, UserRoleEnum.Admin);
+        
+        adminService.approveUser(approveUserPayload);
+        
+        return ResultBean.success();
+    }
 }

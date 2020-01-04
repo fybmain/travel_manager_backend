@@ -1,6 +1,6 @@
 package com.example.travelmanager.controller.bean;
 
-import com.example.travelmanager.config.WebException.ErrorException;
+import com.example.travelmanager.config.exception.ErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
