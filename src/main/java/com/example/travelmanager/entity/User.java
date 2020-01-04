@@ -1,6 +1,8 @@
 package com.example.travelmanager.entity;
 
 import com.example.travelmanager.service.CommonHelper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Data;
@@ -25,6 +27,7 @@ public class User {
 
     @Getter @Setter
     @Column(nullable = false) @NotNull
+    @JsonIgnore
     private String passwordHash;
 
     // 可不为空
@@ -50,6 +53,7 @@ public class User {
     private Integer role;
 
     @Getter @Setter
+    @JsonIgnore
     private String avatar;
 
     /****** Methods ******/

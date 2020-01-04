@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.Set;
 
 // TravelApplicationException 出差申请不存在
 @Service
@@ -176,8 +176,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public SimplePaymentListResponse listApplications(Integer userId, Integer pageSize, Integer pageNum, String state, Integer departmentId) {
+        // 发起请求的用户
+        final User user = userDao.findById(userId).get();
+        
         // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
-        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
         if(statusSet == null) {
             throw PaymentControllerException.StateParamErrorException;
         }
@@ -190,9 +193,6 @@ public class PaymentServiceImpl implements PaymentService {
         // 分页相关实例
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
         Page<PaymentApplication> payments;
-
-        // 发起请求的用户
-        final User user = userDao.findById(userId).get();
 
         //3. 判断用户角色 角色为部门经理返回部门的 角色为总经理按照departmentId设计返回
         if(user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
@@ -250,14 +250,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state) {
+        // 发起请求的用户
+        final User user = userDao.findById(userId).get();
+        
         // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
-        HashSet<Integer> statusSet = Constant.getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
         if(statusSet == null) {
             throw PaymentControllerException.StateParamErrorException;
         }
-
-        // 发起请求的用户
-        final User user = userDao.findById(userId).get();
 
         // response初始化
         SimplePaymentListResponse response = new SimplePaymentListResponse();
@@ -313,7 +313,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 状态为已经固定了
-        if(application.getStatus() == ApplicationStatusEnum.ApplicationApproved.getStatus() || application.getStatus() == ApplicationStatusEnum.ApplicationNotApproved.getStatus()) {
+        if(application.getStatus() == ApplicationStatusEnum.ApplicationApproved.getStatus() || 
+           application.getStatus() == ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus() || 
+           application.getStatus() == ApplicationStatusEnum.ManagerNotApproved.getStatus()){
             throw PaymentControllerException.ApplicationStateCanNotModifyException;
         }
 
@@ -324,7 +326,7 @@ public class PaymentServiceImpl implements PaymentService {
                     application.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
                 }
                 else {
-                    application.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                    application.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
                 }
                 paymentApplicationDao.save(application);
             } else {
@@ -336,7 +338,7 @@ public class PaymentServiceImpl implements PaymentService {
                 if(approved) {
                     application.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
                 } else {
-                    application.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                    application.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
                 }
                 paymentApplicationDao.save(application);
             } else {
@@ -345,7 +347,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 申请未通过，设置travel的为false
-        if(application.getStatus() == ApplicationStatusEnum.ApplicationNotApproved.getStatus()) {
+        if(application.getStatus() == ApplicationStatusEnum.ManagerNotApproved.getStatus() || 
+           application.getStatus() == ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus() ){
             TravelApplication travelApplication = travelQuery.get();
             travelApplication.setPaid(false);
             travelApplicationDao.save(travelApplication);
