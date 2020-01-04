@@ -52,7 +52,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         User user = userDao.findById(uid).get();
 
         // valid state
-        Set<Integer> statusSet = Constant.getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
         if(statusSet == null) {
             throw TravelControllerException.GetApplicationsStateErrorException;
         }
@@ -76,8 +76,9 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     @Override
     public TravelApplicationsResponse getTravelApplications(int uid, int page, int size, String state) {
         page = (page > 0) ? (page - 1) : 0;
+        User user = userDao.findById(uid).get();
 
-        Set<Integer> statusSet = Constant.getStatusSet(state);
+        Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
         if(statusSet == null) {
             throw TravelControllerException.GetApplicationsStateErrorException;
         }
@@ -105,7 +106,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             t.setApplyId(travelApplication.getId());
             t.setApplyTime(travelApplication.getApplyTime());
             t.setStatus(travelApplication.getStatus());
-            t.setDepartmentName(departmentMap.getOrDefault(travelApplication.getDepartmentId(), "unknown department"));
+            t.setDepartmentName(departmentMap.getOrDefault(travelApplication.getDepartmentId(), "未知部门"));
             var queryUser = userDao.findById(travelApplication.getApplicantId());
             if (queryUser.isEmpty()) {
                 t.setApplicantName("用户不存在");
@@ -197,7 +198,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
                 travelApplication.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
             }
             else {
-                travelApplication.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                travelApplication.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
             }
             travelApplicationDao.save(travelApplication);
         }
@@ -209,7 +210,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
                 travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
             }
             else {
-                travelApplication.setStatus(ApplicationStatusEnum.ApplicationNotApproved.getStatus());
+                travelApplication.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
             }
             travelApplicationDao.save(travelApplication);
         }
