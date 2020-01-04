@@ -13,6 +13,7 @@ import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.ApprovalPayload;
+import com.example.travelmanager.response.travel.DetailTravelApplication;
 import com.example.travelmanager.response.travel.SimpleTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     private DepartmentDao departmentDao;
 
     @Override
-    public TravelApplicationsResponse getTravelUnpaidApplication(int uid, int page, int size, Boolean paid) {
+    public TravelApplicationsResponse getTravelUnpaidApplication(int uid, int page, int size) {
         page = (page > 0) ? (page - 1) : 0;
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
-        Page<TravelApplication> travelApplications = travelApplicationDao.findAllUnpaid(paid, uid, pageable);
+        Page<TravelApplication> travelApplications = travelApplicationDao.findAllUnpaid(uid, pageable);
         return pageApplications(travelApplications);
     }
 
@@ -120,12 +121,52 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     }
 
     @Override
-    public TravelApplication getTravelApplication(int uid, int applyId) {
+    public DetailTravelApplication getTravelApplication(int uid, int applyId) {
         User user = userDao.findById(uid).get();
         var query = travelApplicationDao.findById(applyId);
         if (query.isEmpty()) {
             throw TravelControllerException.TravelApplicationNotFoundException;
         }
+        TravelApplication application = query.get();
+        DetailTravelApplication detailTravelApplication = new DetailTravelApplication();
+
+        detailTravelApplication.setApplicantId(application.getApplicantId());
+        var userQuery = userDao.findById(application.getApplicantId());
+        if (userQuery.isEmpty()){
+            detailTravelApplication.setApplicantName("未知用户");
+        }
+        else {
+            detailTravelApplication.setApplicantName(userQuery.get().getName());
+        }
+
+        detailTravelApplication.setDepartmentId(application.getDepartmentId());
+        var departmentQuery = departmentDao.findById(application.getDepartmentId());
+        if (departmentQuery.isEmpty()){
+            detailTravelApplication.setDepartmentName("未知部门");
+        }
+        else {
+            detailTravelApplication.setDepartmentName(departmentQuery.get().getName());
+        }
+
+        detailTravelApplication.setId(application.getId());
+        
+        detailTravelApplication.setApplyTime(application.getApplyTime());
+        detailTravelApplication.setStartTime(application.getStartTime());
+        detailTravelApplication.setEndTime(application.getEndTime());
+
+        detailTravelApplication.setFoodBudget(application.getFoodBudget());
+        detailTravelApplication.setHotelBudget(application.getHotelBudget());
+        detailTravelApplication.setOtherBudget(application.getOtherBudget());
+        detailTravelApplication.setVehicleBudget(application.getVehicleBudget());
+        detailTravelApplication.setPaid(application.getPaid());
+
+        detailTravelApplication.setReason(application.getReason());
+        detailTravelApplication.setProvince(application.getProvince());
+        detailTravelApplication.setCity(application.getCity());
+
+        detailTravelApplication.setStatus(application.getStatus());
+        
+
         TravelApplication travelApplication = query.get();
         if (user.getRole() == UserRoleEnum.Employee.getRoleId()) {
             if (travelApplication.getApplicantId() != user.getId()) {
@@ -137,7 +178,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
                 throw TravelControllerException.TravelApplicationForbiddenException;
             }
         }
-        return travelApplication;
+        return detailTravelApplication;
     }
 
     @Override

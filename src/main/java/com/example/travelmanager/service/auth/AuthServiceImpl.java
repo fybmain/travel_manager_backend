@@ -9,7 +9,8 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.RegisterPayload;
-import lombok.extern.slf4j.Slf4j;
+import com.example.travelmanager.payload.ResetPasswordPayload;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import response.TokenResponse;
@@ -21,7 +22,6 @@ import java.util.Base64;
 import java.util.Date;
 
 @Service
-@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -88,6 +88,18 @@ public class AuthServiceImpl implements AuthService {
         return tokenResponse;
     }
 
+    @Override
+    public void resetPassword(int uid, ResetPasswordPayload resetPasswordPayload){
+        User user = userDao.findById(uid).get();
+        if (user.validPassword(resetPasswordPayload.getOldPassword())) {
+            user.setPassword(resetPasswordPayload.getNewPassword());
+        }
+        else {
+            throw AuthControllerException.OldPasswordErrorException;
+        }
+        userDao.save(user);
+    }
+
     private static Token decryptToken(String tokenStr) {
         String text = decrypt(tokenStr);
         if (text == null) {
@@ -119,7 +131,6 @@ public class AuthServiceImpl implements AuthService {
     private static String decrypt(String encodeText){
         try{
             Base64.Decoder decoder = Base64.getDecoder();
-            String text = new String(decoder.decode(encodeText));
             Key aesKey = new SecretKeySpec(Constant.SIGNING_KEY.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey);

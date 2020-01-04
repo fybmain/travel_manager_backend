@@ -6,6 +6,7 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
+import com.example.travelmanager.payload.ResetPasswordPayload;
 import com.example.travelmanager.service.auth.AuthService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import response.TokenResponse;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -59,8 +61,23 @@ public class AuthController {
             @ApiResponse(code = 201, message = "{code=0,msg='success'}", response = ResultBean.class),
             @ApiResponse(code = 400, message = "{code=1001,msg='work id exists'}", response = ResultBean.class)
     })
-    public HttpEntity Register(@Validated @RequestBody RegisterPayload registerPayload) {
+    public HttpEntity register(@Validated @RequestBody RegisterPayload registerPayload) {
         authService.register(registerPayload);
         return ResultBean.success(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/resetpassword")
+    @ApiOperation(value = "修改密码", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class),
+        @ApiResponse(code = 400, message = "{code=1002, msg='密码错误'", response = ResultBean.class)
+    })
+    public HttpEntity resetPassword(
+        @RequestHeader(Constant.HEADER_STRING) String auth,
+        @RequestBody ResetPasswordPayload resetPasswordPayload
+    ){
+        int uid = authService.authorize(auth);
+        authService.resetPassword(uid, resetPasswordPayload);
+        return ResultBean.success();
     }
 }

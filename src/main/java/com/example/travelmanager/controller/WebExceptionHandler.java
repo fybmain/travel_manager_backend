@@ -1,10 +1,12 @@
 package com.example.travelmanager.controller;
 
-
 import com.example.travelmanager.config.WebException.*;
 import com.example.travelmanager.controller.bean.ResultBean;
+import com.example.travelmanager.service.email.EmailService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -18,10 +20,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class WebExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(WebExceptionHandler.class);
 
+    @Autowired
+    private EmailService emailSetvice;
+
     @ExceptionHandler
     public ResponseEntity unknownExceptionHandler(Exception e) {
         logger.error("发生了未知异常", e);
+        StackTraceElement[] stackTraceElements =  e.getStackTrace();
+        String traceString = new String();
+        for (StackTraceElement stackTraceElement : stackTraceElements) {
+            traceString += "\n"  + stackTraceElement.toString();
+        }
         // 发送邮件通知技术人员.
+        emailSetvice.sendSimpleMail("Chenglei.Y@outlook.com;504490160@qq.com", e.getMessage(), traceString);
+        
         return ResultBean.error(HttpStatus.INTERNAL_SERVER_ERROR, -99, e.getMessage());
     }
 

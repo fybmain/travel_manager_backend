@@ -4,8 +4,9 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.entity.TravelApplication;
 import com.example.travelmanager.enums.UserRoleEnum;
-import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.ApprovalPayload;
+import com.example.travelmanager.payload.TravelApplicationPayload;
+import com.example.travelmanager.response.travel.DetailTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import com.example.travelmanager.service.TravelApplication.TravelApplicationService;
 import com.example.travelmanager.service.auth.AuthService;
@@ -47,7 +48,7 @@ public class TravelApplicationController {
 
     @ApiOperation(value = "获取一个报销申请（通过申请ID）", response = ResultBean.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = TravelApplication.class),
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = DetailTravelApplication.class),
             @ApiResponse(code = 404, message = "{code=1001, msg='TravelApplication not found'}", response = ResultBean.class),
             @ApiResponse(code = 403, message = "{code=1002, msg='Not allowed to access this application'}", response = ResultBean.class),
     })
@@ -57,8 +58,8 @@ public class TravelApplicationController {
             @RequestParam int applyId
     ) {
         int uid = authService.authorize(auth);
-        TravelApplication travelApplication = travelApplicationService.getTravelApplication(uid, applyId);
-        return ResultBean.success(travelApplication);
+        DetailTravelApplication detailTravelApplication = travelApplicationService.getTravelApplication(uid, applyId);
+        return ResultBean.success(detailTravelApplication);
     }
 
     @GetMapping("/applications/me")
@@ -109,7 +110,7 @@ public class TravelApplicationController {
             @RequestParam(defaultValue = "8") int size
     ) {
         int uid = authService.authorize(auth);
-        TravelApplicationsResponse travelApplicationsResponse =  travelApplicationService.getTravelUnpaidApplication(uid,page, size, false);
+        TravelApplicationsResponse travelApplicationsResponse =  travelApplicationService.getTravelUnpaidApplication(uid,page, size);
         return ResultBean.success(travelApplicationsResponse);
     }
 
