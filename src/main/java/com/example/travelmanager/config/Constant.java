@@ -12,6 +12,8 @@ public class Constant {
     public static final String SIGNING_KEY = "PBKDF2WithHmacSH";   // mut be 16,24 or 32 bytes
     public static final String HEADER_STRING = "Authorization";
 
+    public static final String managerDepartmentName = "总裁办";
+
     private static final HashSet<Integer> APPLICATION_USER_UNFINISHED = new HashSet<Integer>(Arrays.asList(
             ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus(),
             ApplicationStatusEnum.NeedManagerApprove.getStatus())

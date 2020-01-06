@@ -7,7 +7,7 @@ public class AuthControllerException extends ErrorException {
 
     private static final Integer WorkIdExists = 1001;
     private static final String WorkIdExistsMsg = "work id exists";
-    public static final AuthControllerException WorkIdNotExistException =
+    public static final AuthControllerException WorkIdExistException =
         new AuthControllerException(WorkIdExists,WorkIdExistsMsg, HttpStatus.BAD_REQUEST);
 
 
@@ -25,6 +25,16 @@ public class AuthControllerException extends ErrorException {
     private static final String notAllowedLoginErrorMsg = "用户不可登录";
     public static final AuthControllerException notAllowedLoginErrorException = 
         new AuthControllerException(notAllowedLoginError, notAllowedLoginErrorMsg, HttpStatus.LOCKED);
+
+    private static final Integer emailError = 1005;
+    private static final String emailErrorMsg = "邮箱错误";
+    public static final AuthControllerException emailErrorException = 
+        new AuthControllerException(emailError, emailErrorMsg, HttpStatus.BAD_REQUEST);
+
+    private static final Integer userNotExistError = 1006;
+    private static final String userNotExistErrorMsg = "用户不存在";
+    public static final AuthControllerException userNotExistErrorException = 
+        new AuthControllerException(userNotExistError, userNotExistErrorMsg, HttpStatus.NOT_FOUND);
     // 构造函数
     private AuthControllerException(int code, String msg, HttpStatus httpStatus) {
         super(code, msg, httpStatus);

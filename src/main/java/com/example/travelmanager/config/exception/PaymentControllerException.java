@@ -3,7 +3,8 @@ package com.example.travelmanager.config.exception;
 import org.springframework.http.HttpStatus;
 
 public class PaymentControllerException extends ErrorException {
-
+    private static final long serialVersionUID = 9103195753011310202L;
+    
     private static final Integer TravelApplicationNotFound = 1001;
     public static final PaymentControllerException TravelApplicationNotFoundException = new PaymentControllerException(TravelApplicationNotFound, "The corresponding TravelApplication was not found", HttpStatus.NOT_FOUND);
 

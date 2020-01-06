@@ -2,11 +2,13 @@ package com.example.travelmanager.controller;
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
-import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.payload.EditUserPaylod;
+import com.example.travelmanager.payload.ForgetPasswordPayload;
 import com.example.travelmanager.payload.LoginPayload;
 import com.example.travelmanager.payload.RegisterPayload;
 import com.example.travelmanager.payload.ResetPasswordPayload;
+import com.example.travelmanager.payload.SetPasswordPayload;
+import com.example.travelmanager.response.TokenResponse;
 import com.example.travelmanager.service.auth.AuthService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,7 +18,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import response.TokenResponse;
 
 
 @RestController
@@ -30,7 +31,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
             @ApiResponse(code = 401, message = "{code=1003, msg='用户名或密码错误'}", response = ResultBean.class),
-            @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
+            @ApiResponse(code = 423, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity GetToken(@Validated @RequestBody LoginPayload loginPayload) {
         TokenResponse token = authService.getToken(loginPayload);
@@ -42,7 +43,7 @@ public class AuthController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
         @ApiResponse(code = 401, message = "{code=401, msg='token不合法或者已过期'}", response = ResultBean.class),
-        @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
+        @ApiResponse(code = 423, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity refreshToken(@RequestHeader(Constant.HEADER_STRING) String auth) {
         authService.authorize(auth);
@@ -60,7 +61,7 @@ public class AuthController {
         return ResultBean.success(HttpStatus.CREATED);
     }
 
-    @PostMapping("/resetpassword")
+    @PostMapping("/setpassword")
     @ApiOperation(value = "修改密码", response = ResultBean.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "{code=0,msg='success'}", response = ResultBean.class),
@@ -68,10 +69,10 @@ public class AuthController {
     })
     public HttpEntity resetPassword(
         @RequestHeader(Constant.HEADER_STRING) String auth,
-        @RequestBody ResetPasswordPayload resetPasswordPayload
+        @RequestBody SetPasswordPayload setPasswordPayload
     ){
         int uid = authService.authorize(auth);
-        authService.resetPassword(uid, resetPasswordPayload);
+        authService.setPassword(uid, setPasswordPayload);
         return ResultBean.success();
     }
 
@@ -86,6 +87,33 @@ public class AuthController {
     ){
         int uid = authService.authorize(auth);
         authService.editUser(uid, editUserPaylod);
+        return ResultBean.success();
+    }
+
+    @PostMapping("/forgetpassword")
+    @ApiOperation(value = "找回密码", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = ResultBean.class),
+        @ApiResponse(code = 404, message = "{code=1006, msg='用户不存在'}", response = ResultBean.class),
+        @ApiResponse(code = 400, message = "{code=1005, msg='邮箱错误'}", response = ResultBean.class)
+    })
+    public HttpEntity forgetPassword(
+        @Validated @RequestBody ForgetPasswordPayload forgetPasswordPayload
+    ){
+        authService.forgetPassword(forgetPasswordPayload);
+        return ResultBean.success();
+    }
+
+    @PostMapping("/resetpassword")
+    @ApiOperation(value = "重置密码", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0, mag='success'}", response = ResultBean.class),
+        @ApiResponse(code = 403, message = "", response = ResultBean.class)
+    })
+    public HttpEntity reSetPassword(
+        @Validated @RequestBody ResetPasswordPayload resetPasswordPayload
+    ){
+        authService.resetPasswoed(resetPasswordPayload);
         return ResultBean.success();
     }
 }

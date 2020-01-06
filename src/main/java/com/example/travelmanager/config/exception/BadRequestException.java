@@ -1,6 +1,8 @@
 package com.example.travelmanager.config.exception;
 
 public class BadRequestException extends RuntimeException{
+    private static final long serialVersionUID = -2701744067507357923L;
+    
     private Integer errCode;
 
     public BadRequestException(String msg) {
