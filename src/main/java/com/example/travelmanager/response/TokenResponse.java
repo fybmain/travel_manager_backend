@@ -1,4 +1,4 @@
-package response;
+package com.example.travelmanager.response;
 
 import com.example.travelmanager.service.auth.UserInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -4,12 +4,12 @@ import javax.validation.constraints.NotBlank;
 
 import lombok.*;
 
-public class ResetPasswordPayload{
+public class ForgetPasswordPayload {
     @Getter @Setter
     @NotBlank
-    private String token;
+    private String workId;
 
     @Getter @Setter
     @NotBlank
-    private String newPassword;
+    private String email;
 }
