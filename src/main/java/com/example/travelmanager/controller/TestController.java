@@ -5,8 +5,7 @@ import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.dao.StatisticsDao;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
-import com.example.travelmanager.entity.TravelApplication;
-import com.example.travelmanager.response.statistics.MoneyDatePair;
+
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.email.EmailService;
 
@@ -38,11 +37,5 @@ public class TestController {
         emailService.sendSimpleMail(to, subject, content);
         throw new RuntimeException("test");
         //return ResultBean.success();
-    }
-
-    @RequestMapping("/test")
-    public HttpEntity test(Date startDate, Date endDate) {
-   
-        return ResultBean.success();
     }
 }

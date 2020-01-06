@@ -145,11 +145,11 @@ class Mocker:
         else:
             monthStr = str(month)
 
-        start_time = "2019-" + monthStr + "-01 00:00:00"
+        start_time = "2019-" + monthStr + "-01 01:00:00"
         end_time = datetime.today().strftime("2019-" + monthStr + "-%d 00:00:00")
 
         # apply time
-        time_now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        time_now = datetime.today().strftime("2019-" + monthStr + "-%d 00:00:00")
 
 
         sql = "INSERT INTO travel_application (id, applicant_id, apply_time, city, department_id, end_time, food_budget, hotel_budget, other_budget, paid, province, reason, start_time, status, vehicle_budget) " \

@@ -18,6 +18,8 @@ public class StatisticsControllerException extends ErrorException {
     private static final Integer MonthError = 2002;
     public static final StatisticsControllerException MonthErrorException = new StatisticsControllerException(MonthError, "month number error", HttpStatus.BAD_REQUEST);
 
+    private static final Integer TableNameError = 2003;
+    public static final StatisticsControllerException TableNameErrorException = new StatisticsControllerException(TableNameError, "table name error", HttpStatus.INTERNAL_SERVER_ERROR);
     // 构造函数
     private StatisticsControllerException(int code, String msg, HttpStatus httpStatus) {
         super(code, msg, httpStatus);
