@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "payment_application")
 public class PaymentApplication {
     @Id
     @Getter @Setter

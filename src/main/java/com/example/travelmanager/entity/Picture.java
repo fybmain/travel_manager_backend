@@ -10,6 +10,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "picture")
 public class Picture {
     @Id
     @Getter @Setter
