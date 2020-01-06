@@ -7,5 +7,5 @@ import java.util.ArrayList;
 public interface StatisticsService {
     void checkPermission(Integer userId, Integer departmentId);
 
-    PayBudgetDiffDiagram payBudgetDiff(Integer departmentId, Integer year, ArrayList<Integer> months, String type);
+    PayBudgetDiffDiagram payBudgetDiff(Integer departmentId, String startTime, String endTime);
 }

@@ -1,6 +1,7 @@
 package com.example.travelmanager.dao;
 
 import com.alibaba.fastjson.JSON;
+import com.example.travelmanager.config.exception.StatisticsControllerException;
 import com.example.travelmanager.response.statistics.MoneyDatePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,27 +18,57 @@ public class StatisticsDao {
     @Autowired
     EntityManager em;
 
-    public List<MoneyDatePair> listFoodMoneyDateOfPayment(int departmentId, String sumKey, String tableName) {
-        String s = "";
+    public List<MoneyDatePair> listOneMoneyDatePair(int departmentId, String sumKey, String tableName) {
         String sql = "";
 
         if(departmentId == -1) {
-            s = "SELECT SUM(%s) AS money, " +
-                    "CONCAT(YEAR(apply_time), '-', MONTH(apply_time)) AS yearmonth " +
-                    "FROM (%s) GROUP BY yearmonth";
-            sql = String.format(s, sumKey, tableName);
+            sql = "SELECT SUM(" + sumKey + ") AS money, " +
+                "DATE_FORMAT(apply_time,'%Y-%m') AS yearmonth " +
+                "FROM (" + tableName + ") GROUP BY yearmonth ORDER by yearmonth";
         } else {
-            s =  "SELECT SUM(%s) AS money, " +
-                    "CONCAT(YEAR(apply_time), '-', MONTH(apply_time)) AS yearmonth " +
-                    "FROM (%s) WHERE department_id = %d GROUP BY yearmonth";
-            sql = String.format(s, sumKey, tableName, departmentId);
+            sql = "SELECT SUM(" + sumKey + ") AS money, " +
+                "DATE_FORMAT(apply_time,'%Y-%m') AS yearmonth " +
+                "FROM (" + tableName + ") WHERE department_id = " + departmentId +
+                " GROUP BY yearmonth ORDER by yearmonth";
         }
 
         List<MoneyDatePair> moneyDatePairs = new ArrayList<MoneyDatePair>();
         List<Object[]> objects = em.createNativeQuery(sql).getResultList();
 
         for(var o:objects) {
-            System.out.print(o[0]);
+            MoneyDatePair pair = new MoneyDatePair((Double) o[0], (String) o[1]);
+            moneyDatePairs.add(pair);
+        }
+
+        return moneyDatePairs;
+    }
+
+    public List<MoneyDatePair> listAllMoneyDatePair(int departmentId, String tableName) {
+        String sumString;
+        if(tableName.contains("payment")) {
+            sumString = "other_payment + food_payment + hotel_payment + vehicle_payment";
+        } else if (tableName.contains("travel")){
+            sumString = "other_budget + food_budget + hotel_budget + vehicle_budget";
+        } else {
+            throw StatisticsControllerException.TableNameErrorException;
+        }
+
+        String sql = "";
+        if(departmentId == -1) {
+            sql = "SELECT SUM(" + sumString + ") AS money, " +
+                    "DATE_FORMAT(apply_time,'%Y-%m') AS yearmonth " +
+                    "from (" + tableName + ") GROUP BY yearmonth ORDER BY yearmonth";
+        } else {
+            sql = "SELECT SUM(" + sumString + ") AS money, " +
+                    "DATE_FORMAT(apply_time,'%Y-%m') AS yearmonth " +
+                    "from (" + tableName + ") " + "WHERE department_id = " + departmentId +
+                    " GROUP BY yearmonth ORDER BY yearmonth";
+        }
+
+        List<MoneyDatePair> moneyDatePairs = new ArrayList<MoneyDatePair>();
+        List<Object[]> objects = em.createNativeQuery(sql).getResultList();
+
+        for(var o:objects) {
             MoneyDatePair pair = new MoneyDatePair((Double) o[0], (String) o[1]);
             moneyDatePairs.add(pair);
         }

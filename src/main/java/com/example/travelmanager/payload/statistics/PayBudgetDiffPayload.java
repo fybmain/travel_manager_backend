@@ -7,14 +7,11 @@ import java.util.ArrayList;
 
 public class PayBudgetDiffPayload {
     @Setter @Getter
-    private Integer year;
+    private String startTime;
 
     @Setter @Getter
-    private ArrayList<Integer> months;
+    private String endTime;
 
     @Setter @Getter
     private Integer departmentId;
-
-    @Setter @Getter
-    private String type;
 }

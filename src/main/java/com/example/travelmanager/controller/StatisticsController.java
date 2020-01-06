@@ -30,13 +30,13 @@ public class StatisticsController {
         // departmentId = -1时返回全部的
         // 此接口只能被部门经理和总经理调用
         // 1. 验证token
-        // Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+        Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
         // 2. checkPermission
-        // statisticsService.checkPermission(userId, payload.getDepartmentId());
+        statisticsService.checkPermission(userId, payload.getDepartmentId());
 
         // type: food, other, hotel, vehicle
-        var result = statisticsService.payBudgetDiff(payload.getDepartmentId(), payload.getYear(), payload.getMonths(), payload.getType());
+        var result = statisticsService.payBudgetDiff(payload.getDepartmentId(), payload.getStartTime(), payload.getEndTime());
 
         return ResultBean.success(result);
     }
