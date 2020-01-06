@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public interface TravelApplicationDao extends CrudRepository<TravelApplication, Integer> , JpaSpecificationExecutor<TravelApplication> {
@@ -22,4 +24,10 @@ public interface TravelApplicationDao extends CrudRepository<TravelApplication, 
 
     @Query("select t from TravelApplication t where t.paid = false and t.applicantId = :uid and t.status = 3")
     Page<TravelApplication> findAllUnpaid(@Param("uid") Integer uid, Pageable pageable);
+
+    @Query("select t.province, t.city, COUNT(t.id) from TravelApplication t  where t.status =3 and t.startTime >= :startDate and t.startTime < :endDate group by t.province, t.city ")
+    List<Object[]> getCityCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("select t.province, t.city, COUNT(t.id) from TravelApplication t where t.status =3 and t.startTime >= :startDate and t.startTime < :endDate and t.departmentId = :departmentId group by t.province, t.city ")
+    List<Object[]> getCityCountByDepartment(@Param("departmentId") Integer departmentId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }
