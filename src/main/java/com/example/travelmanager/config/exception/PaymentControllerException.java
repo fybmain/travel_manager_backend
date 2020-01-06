@@ -43,6 +43,7 @@ public class PaymentControllerException extends ErrorException {
 
     private static final Integer DuplicatePaymentApplication = 4003;
     public static final PaymentControllerException DuplicatePaymentApplicationException = new PaymentControllerException(DuplicatePaymentApplication, "This travel application have ongoing payment application already", HttpStatus.FORBIDDEN);
+
     // 构造函数
     private PaymentControllerException(int code, String msg, HttpStatus httpStatus) {
         super(code, msg, httpStatus);

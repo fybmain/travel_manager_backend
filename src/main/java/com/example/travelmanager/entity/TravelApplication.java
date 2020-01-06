@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Table(name = "travel_application")
 public class TravelApplication {
     @Id
     @Getter @Setter

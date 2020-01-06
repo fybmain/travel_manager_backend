@@ -28,9 +28,6 @@ public class PaymentApplicationController {
     private AuthService authService;
 
     @Autowired
-    private PaymentApplicationDao paymentApplicationDao;
-
-    @Autowired
     private PaymentService paymentService;
 
 

@@ -1,5 +1,6 @@
 package com.example.travelmanager.service.payment;
 
+import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.PaymentControllerException;
 import com.example.travelmanager.dao.*;
@@ -181,6 +182,7 @@ public class PaymentServiceImpl implements PaymentService {
         
         // 1. 构建查询set. 根据用户请求参数不同，填充不同的申请到list中.
         Set<Integer> statusSet = Constant.getStatusSet(state, user.getRole());
+
         if(statusSet == null) {
             throw PaymentControllerException.StateParamErrorException;
         }
