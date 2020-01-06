@@ -13,7 +13,9 @@ import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.ApprovalPayload;
+import com.example.travelmanager.response.travel.CityAndTimes;
 import com.example.travelmanager.response.travel.DetailTravelApplication;
+import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
 import com.example.travelmanager.response.travel.SimpleTravelApplication;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -252,5 +255,67 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         }
 
         travelApplicationDao.save(travelApplication);
+    }
+
+    @Override
+    public List<ProvinceAndTimesResponse> getTravelTimes(Integer uid, Integer departmentId, String startTimeStr, String endTimeStr) {
+        // get Date
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        Date startTime = null;
+        Date endTime = null;
+        try {
+            startTime = simpleDateFormat.parse(startTimeStr);
+
+            endTime = simpleDateFormat.parse(endTimeStr);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endTime); 
+            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1); 
+            endTime = calendar.getTime();
+        }
+        catch (Exception e){
+            throw TravelControllerException.DateStringFormatErrorException;
+        }
+        
+        // Get data from db
+        User user = userDao.findById(uid).get();
+        List<Object[]> objs = null;
+        if (departmentId == -1 ) {// for all 
+            objs = travelApplicationDao.getCityCount(startTime, endTime);
+        }
+        else {
+            if (user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
+                departmentId = user.getDepartmentId();
+            }
+            objs = travelApplicationDao.getCityCountByDepartment(departmentId, startTime, endTime);
+        }
+
+        Map<String, ProvinceAndTimesResponse> map = new HashMap<String, ProvinceAndTimesResponse> ();
+        for (Object[] obj: objs) {
+            String province = obj[0].toString();
+            String city = obj[1].toString();
+            Integer count = Integer.parseInt(obj[2].toString());
+            if (!map.containsKey(province)) {
+                ProvinceAndTimesResponse provinceAndTimesResponse = new ProvinceAndTimesResponse();
+                provinceAndTimesResponse.setCityAndTimes(new ArrayList<CityAndTimes>());
+                provinceAndTimesResponse.setCount(0);
+                provinceAndTimesResponse.setProvince(province);
+                map.put(province, provinceAndTimesResponse);
+            }
+            ProvinceAndTimesResponse provinceAndTimesResponse = map.get(province);
+            CityAndTimes cityAndTimes = new CityAndTimes();
+            cityAndTimes.setCity(city);
+            cityAndTimes.setCount(count);
+
+            provinceAndTimesResponse.getCityAndTimes().add(cityAndTimes);
+            int tmp = provinceAndTimesResponse.getCount() + count;
+            provinceAndTimesResponse.setCount(tmp);
+        }
+
+        // to list
+        List<ProvinceAndTimesResponse> provinceAndTimesResponses = new ArrayList<ProvinceAndTimesResponse>();
+        for(ProvinceAndTimesResponse provinceAndTimesResponse: map.values()) {
+            provinceAndTimesResponses.add(provinceAndTimesResponse);
+        }
+        return provinceAndTimesResponses;
     }
 }
