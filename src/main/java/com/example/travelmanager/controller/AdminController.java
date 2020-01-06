@@ -16,6 +16,8 @@ import com.example.travelmanager.service.admin.AdminService;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.ApproveUserPayload;
+import com.example.travelmanager.payload.ChangeDepartmentPayload;
+import com.example.travelmanager.payload.ChangeUserRolePayload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -25,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/api/admin")
@@ -53,9 +53,11 @@ public class AdminController {
 
     @PutMapping(value = "/user/approval")
     @ApiOperation(value = "审核用户账号", response = ResultBean.class)
-    @ApiResponses({ @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
-            @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class),
-            @ApiResponse(code = 400, message = "{code=1002,msg='用户不能被修改'}", response = ResultBean.class) })
+    @ApiResponses({ 
+        @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
+        @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class),
+        @ApiResponse(code = 400, message = "{code=1002,msg='用户不能被修改'}", response = ResultBean.class) 
+    })
     public HttpEntity approveUser(@RequestHeader(Constant.HEADER_STRING) final String auth,
             @Validated @RequestBody final ApproveUserPayload approveUserPayload
     ) {
@@ -63,6 +65,37 @@ public class AdminController {
         
         adminService.approveUser(approveUserPayload);
         
+        return ResultBean.success();
+    }
+
+    @PutMapping(value = "/user/role")
+    @ApiOperation(value = "修改用户角色", response = ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = ResultBean.class),
+        @ApiResponse(code = 404, message = "{code=1001, msg='用户不存在'}", response = ResultBean.class),
+        @ApiResponse(code = 400, message = "[{code=1004, msg='用户必须属于一个部门'}, {code=1005, msg='部门经理已存在'}]", response = ResultBean.class)
+    })
+    public HttpEntity changetUserRole(
+        @RequestHeader(Constant.HEADER_STRING) String auth, 
+        @Validated @RequestBody ChangeUserRolePayload changeUserRolePayload
+    ) {
+        authService.authorize(auth, UserRoleEnum.Admin);
+        adminService.changeUserRole(changeUserRolePayload);
+        return ResultBean.success();
+    }
+
+    @PutMapping(value = "/user/department")
+    @ApiOperation(value = "修改用户部门", response=ResultBean.class)
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = ResultBean.class),
+        @ApiResponse(code = 404, message = "[{code=1001, msg='用户不存在'},{code=1003, msg='部门不存在'}]", response = ResultBean.class)
+    })
+    public HttpEntity changeDepartment (
+        @RequestHeader(Constant.HEADER_STRING) String auth, 
+        @Validated @RequestBody ChangeDepartmentPayload changeDepartmentPayload
+    ){
+        authService.authorize(auth, UserRoleEnum.Admin);
+        adminService.changeDepartment(changeDepartmentPayload);
         return ResultBean.success();
     }
 }
