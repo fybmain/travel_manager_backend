@@ -316,6 +316,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         for(ProvinceAndTimesResponse provinceAndTimesResponse: map.values()) {
             provinceAndTimesResponses.add(provinceAndTimesResponse);
         }
+        provinceAndTimesResponses.sort(Comparator.comparing(ProvinceAndTimesResponse::getCount).reversed());
         return provinceAndTimesResponses;
     }
 }
