@@ -43,26 +43,21 @@ public class AdminController {
     })
     @GetMapping(value="/users")
     public HttpEntity getUsers(
-        @RequestHeader(Constant.HEADER_STRING) String auth,
-        @RequestParam(defaultValue = "1") Integer page,
-        @RequestParam(defaultValue = "8") Integer size,
-        @ApiParam("true已审批账户，false未审批账户") @RequestParam(defaultValue = "false") Boolean enable
-    ) {
+        @RequestHeader(Constant.HEADER_STRING) final String auth,
+            @RequestParam(defaultValue = "1") final Integer page, @RequestParam(defaultValue = "8") final Integer size,
+            @ApiParam("true已审批账户，false未审批账户") @RequestParam(defaultValue = "false") final Boolean enable) {
         authService.authorize(auth, UserRoleEnum.Admin);
-        UsersResponse usersResponse = adminService.getUsers(enable, page, size);
+        final UsersResponse usersResponse = adminService.getUsers(enable, page, size);
         return ResultBean.success(usersResponse);
     }
-    
-    @PutMapping(value="/user/approval")
+
+    @PutMapping(value = "/user/approval")
     @ApiOperation(value = "审核用户账号", response = ResultBean.class)
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
-        @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class),
-        @ApiResponse(code = 400, message = "{code=1002,msg='用户不能被修改'}", response = ResultBean.class)
-    })
-    public HttpEntity approveUser(
-        @RequestHeader(Constant.HEADER_STRING) String auth,
-        @Validated @RequestBody ApproveUserPayload approveUserPayload
+    @ApiResponses({ @ApiResponse(code = 200, message = "code = 0", response = ResultBean.class),
+            @ApiResponse(code = 404, message = "{code=1001,msg='用户不存在'}", response = ResultBean.class),
+            @ApiResponse(code = 400, message = "{code=1002,msg='用户不能被修改'}", response = ResultBean.class) })
+    public HttpEntity approveUser(@RequestHeader(Constant.HEADER_STRING) final String auth,
+            @Validated @RequestBody final ApproveUserPayload approveUserPayload
     ) {
         authService.authorize(auth, UserRoleEnum.Admin);
         

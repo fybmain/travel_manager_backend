@@ -30,7 +30,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
             @ApiResponse(code = 401, message = "{code=1003, msg='用户名或密码错误'}", response = ResultBean.class),
-            @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
+            @ApiResponse(code = 423, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity GetToken(@Validated @RequestBody LoginPayload loginPayload) {
         TokenResponse token = authService.getToken(loginPayload);
@@ -42,7 +42,7 @@ public class AuthController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
         @ApiResponse(code = 401, message = "{code=401, msg='token不合法或者已过期'}", response = ResultBean.class),
-        @ApiResponse(code = 403, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
+        @ApiResponse(code = 423, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity refreshToken(@RequestHeader(Constant.HEADER_STRING) String auth) {
         authService.authorize(auth);
