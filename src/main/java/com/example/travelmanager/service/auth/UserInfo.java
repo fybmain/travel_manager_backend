@@ -23,6 +23,9 @@ public class UserInfo {
     @Getter @Setter
     private String departmentName;
 
+    @Getter @Setter
+    private String workId;
+
     public UserInfo() { }
 
     public UserInfo(User user) {
@@ -31,5 +34,6 @@ public class UserInfo {
         this.telephone = user.getTelephone();
         this.role = user.getRole();
         this.departmentId = user.getDepartmentId();
+        this.workId = user.getWorkId();
     }
 }
