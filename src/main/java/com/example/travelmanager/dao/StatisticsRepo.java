@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
 
 
 @Repository
-public class StatisticsDao {
+public class StatisticsRepo {
 
     @Autowired
     EntityManager em;
