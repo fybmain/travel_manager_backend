@@ -260,7 +260,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
     @Override
     public List<ProvinceAndTimesResponse> getTravelTimes(Integer uid, Integer departmentId, String startTimeStr, String endTimeStr) {
         // get Date
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
         Date startTime = null;
         Date endTime = null;
         try {

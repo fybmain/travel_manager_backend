@@ -18,7 +18,7 @@ public class TravelControllerException extends ErrorException {
     
     private static final Integer DateStringFormatError= 1004;
     public static final TravelControllerException DateStringFormatErrorException =
-            new TravelControllerException(DateStringFormatError, "日期字符串格式错误，正确格式：yyyy/MM 如：2020/01", HttpStatus.BAD_REQUEST);
+            new TravelControllerException(DateStringFormatError, "日期字符串格式错误，正确格式：yyyy-MM 如：2020-01", HttpStatus.BAD_REQUEST);
 
     // 构造函数
     private TravelControllerException(int code, String msg, HttpStatus httpStatus) {
