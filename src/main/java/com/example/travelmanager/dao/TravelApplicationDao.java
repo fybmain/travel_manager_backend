@@ -28,6 +28,6 @@ public interface TravelApplicationDao extends CrudRepository<TravelApplication, 
     @Query("select t.province, t.city, COUNT(t.id) from TravelApplication t  where t.status =3 and t.startTime >= :startDate and t.startTime < :endDate group by t.province, t.city ")
     List<Object[]> getCityCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-    @Query("select t.province, t.city, COUNT(t.id) from TravelApplication t where t.status =3 and t.startTime >= :startDate and t.startTime < :endDate and t.departmentId = :departmentId group by t.province, t.city ")
+    @Query("select t.province, t.city, COUNT(t.id) from TravelApplication t where t.status =3 and t.startTime >= :startDate and t.startTime < :endDate and t.departmentId = :departmentId group by t.province, t.city")
     List<Object[]> getCityCountByDepartment(@Param("departmentId") Integer departmentId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }
