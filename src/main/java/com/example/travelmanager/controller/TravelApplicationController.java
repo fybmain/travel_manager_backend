@@ -136,7 +136,7 @@ public class TravelApplicationController {
     }
 
     @GetMapping(value="/statistic/location")
-    @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数，包括起止月份，月份格式： yyyy/MM 如：2020-01")
+    @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数，包括起止月份，月份格式： yyyy-MM 如：2020-01")
     @ApiResponses({
         @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ProvinceAndTimesResponse.class),
         @ApiResponse(code = 400, message = "{code=1004, msg='日期字符串格式错误，正确格式：yyyy-MM 如：2020-01'}", response = ResultBean.class)
