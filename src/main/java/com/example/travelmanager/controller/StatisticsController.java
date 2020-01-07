@@ -5,6 +5,7 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.statistics.PayBudgetDiffPayload;
+import com.example.travelmanager.response.statistics.DepartmentCost;
 import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.statistics.StatisticsService;
@@ -57,7 +58,7 @@ public class StatisticsController {
 
 
     @GetMapping(value="/location_diagram")
-    @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数，包括起止月份，月份格式： yyyy-MM 如：2020-01")
+    @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数，包括起止月份，时间格式： yyyy-MM 如：2020-01")
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = ProvinceAndTimesResponse.class),
             @ApiResponse(code = 400, message = "{code=1004, msg='日期字符串格式错误，正确格式：yyyy-MM 如：2020-01'}", response = ResultBean.class)
@@ -74,4 +75,20 @@ public class StatisticsController {
         return ResultBean.success(provinceAndTimesResponses);
     }
 
+    @GetMapping(value = "departmentcost_diagram")
+    @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数;包括起止月份，格式： yyyy-MM 如：2020-01")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=200, msg='success'}", response = DepartmentCost.class),
+            @ApiResponse(code = 400, message = "{code=1004, msg='日期字符串格式错误，正确格式：yyyy-MM 如：2020-01'}", response = ResultBean.class)
+    })
+    public HttpEntity getDepartmentCost(
+        @RequestHeader(Constant.HEADER_STRING) String auth,
+        @RequestParam String startTime,
+        @RequestParam String endTime
+    ) {
+        authService.authorize(auth, UserRoleEnum.Manager);
+
+        List<DepartmentCost> departmentCosts = statisticsService.getDepartmentCost(startTime, endTime);
+        return ResultBean.success(departmentCosts);
+    }
 }

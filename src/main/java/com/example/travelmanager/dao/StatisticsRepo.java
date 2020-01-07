@@ -1,10 +1,8 @@
 package com.example.travelmanager.dao;
 
-import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.exception.StatisticsControllerException;
 import com.example.travelmanager.response.statistics.MoneyDatePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
