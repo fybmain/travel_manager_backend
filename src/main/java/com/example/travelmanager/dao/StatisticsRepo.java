@@ -90,10 +90,6 @@ public class StatisticsRepo {
         PaymentPercentResponse response = new PaymentPercentResponse();
 
         for(var o:result) {
-            if(o == null) {
-                throw StatisticsControllerException.SQLErrorException;
-            }
-
             if(o[0] == null) {
                 response.setFood(0.0);
             } else {
