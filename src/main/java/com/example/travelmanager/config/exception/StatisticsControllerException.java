@@ -12,6 +12,10 @@ public class StatisticsControllerException extends ErrorException {
     private static final Integer PermissionDenied = 1003;
     public static final StatisticsControllerException PermissionDeniedException = new StatisticsControllerException(PermissionDenied, "user don't have enough permission to request this API", HttpStatus.FORBIDDEN);
 
+    private static final Integer DateStringFormatError= 1004;
+    public static final StatisticsControllerException DateStringFormatErrorException =
+            new StatisticsControllerException(DateStringFormatError, "日期字符串格式错误，正确格式：yyyy-MM 如：2020-01", HttpStatus.BAD_REQUEST);
+
     private static final Integer YearError = 2001;
     public static final StatisticsControllerException YearErrorException = new StatisticsControllerException(YearError, "year should > 2000 and < 2020", HttpStatus.BAD_REQUEST);
 

@@ -112,6 +112,8 @@ public class AdminServiceImpl implements AdminService {
                     throw AdminControllerException.managerExistException;
                 }
                 releaseUserDepartment(user);
+                department.setManagerId(user.getId());
+                departmentDao.save(department);
                 user.setDepartmentId(department.getId());
             }
             user.setRole(UserRoleEnum.Manager.getRoleId());
@@ -169,6 +171,9 @@ public class AdminServiceImpl implements AdminService {
             return ;
         }
         var departmentQuery = departmentDao.findById(user.getDepartmentId());
+        if (departmentQuery.isEmpty()) {
+            return ;
+        }
         Department department = departmentQuery.get();
 
         department.setManagerId(null);
