@@ -2,16 +2,21 @@ package com.example.travelmanager.service.statistics;
 
 import com.example.travelmanager.config.exception.StatisticsControllerException;
 import com.example.travelmanager.dao.DepartmentDao;
+import com.example.travelmanager.dao.StatisticsDao;
 import com.example.travelmanager.dao.StatisticsRepo;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.enums.UserRoleEnum;
+import com.example.travelmanager.response.statistics.DepartmentCost;
 import com.example.travelmanager.response.statistics.MoneyDatePair;
 import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
 import com.example.travelmanager.response.statistics.PaymentVariationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,6 +30,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
     private StatisticsRepo statisticsRepo;
+
+    @Autowired
+    private StatisticsDao statisticsDao;
 
     @Override
     public void checkPermission(Integer userId, Integer departmentId) {
@@ -141,13 +149,46 @@ public class StatisticsServiceImpl implements StatisticsService {
         PaymentVariationResponse response = new PaymentVariationResponse();
 
         List<MoneyDatePair> dataList = statisticsRepo.listAllMoneyDatePair(departmentId, "payment_application");
-        for (MoneyDatePair pair:dataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+        for (MoneyDatePair pair : dataList) {
+            if (timeCompare(pair.getDateString(), startTime, endTime)) {
                 response.getDataList().add(pair);
             }
         }
 
         return response;
+    }
+
+    @Override
+    public List<DepartmentCost> getDepartmentCost(String startTimeStr, String endTimeStr) {
+        // get Date
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        Date startTime = null;
+        Date endTime = null;
+        try {
+            startTime = simpleDateFormat.parse(startTimeStr);
+
+            endTime = simpleDateFormat.parse(endTimeStr);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endTime); 
+            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1); 
+            endTime = calendar.getTime();
+        }
+        catch (Exception e){
+            throw StatisticsControllerException.DateStringFormatErrorException;
+        }
+
+        // get data
+        List<Object[]> objs = statisticsDao.getDpartmentCost(startTime, endTime);
+        List<DepartmentCost> departmentCosts = new ArrayList<DepartmentCost>();
+        for(Object[] obj: objs) {
+            String departmentName = obj[0].toString();
+            Double cost = (Double)obj[1];
+            DepartmentCost departmentCost = new DepartmentCost();
+            departmentCost.setDepartmentName(departmentName);
+            departmentCost.setCost(cost);
+            departmentCosts.add(departmentCost);
+        }
+        return departmentCosts;
     }
 
     private Boolean timeCompare(String time, String startTime, String endTime) {
