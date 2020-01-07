@@ -1,7 +1,6 @@
 package com.example.travelmanager.service.statistics;
 
 import com.example.travelmanager.config.exception.StatisticsControllerException;
-import com.example.travelmanager.config.exception.TravelControllerException;
 import com.example.travelmanager.dao.DepartmentDao;
 import com.example.travelmanager.dao.StatisticsDao;
 import com.example.travelmanager.dao.StatisticsRepo;
