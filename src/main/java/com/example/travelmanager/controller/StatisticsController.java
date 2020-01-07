@@ -5,6 +5,9 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.statistics.PayBudgetDiffPayload;
+import com.example.travelmanager.payload.statistics.PaymentVariationPayload;
+import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
+import com.example.travelmanager.response.statistics.PaymentVariationResponse;
 import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.statistics.StatisticsService;
@@ -34,8 +37,15 @@ public class StatisticsController {
     @Autowired
     private TravelApplicationService travelApplicationService;
 
+    // 图一
+    @ApiOperation(value = "获取某个部门或全部部门的实际支出与预算信息。包括各项以及总共(all)的。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PayBudgetDiffDiagram.class),
+            @ApiResponse(code = 400, message = "\"table name error\""),
+            @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
+            @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")
 
-    @ApiOperation(value = "获取某个部门或全部部门的实际支出与预算信息。startTime endTime")
+    })
     @PostMapping("/pay_budget_diff_diagram")
     @ResponseBody
     public ResponseEntity payBudgetDiffDiagram(@RequestHeader(Constant.HEADER_STRING) String auth,
@@ -54,8 +64,30 @@ public class StatisticsController {
         return ResultBean.success(result);
     }
 
+    // 图三
+    // 基于图一的API，只返回每月总的Payment就可以了
+    @ApiOperation(value = "获取某个部门或全部部门的总的月度实际支出。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PaymentVariationResponse.class),
+            @ApiResponse(code = 400, message = "\"table name error\""),
+            @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
+            @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")
 
+    })
+    @PostMapping("/payment_variation_diagram")
+    @ResponseBody
+    public ResponseEntity paymentVariationDiagram(@RequestHeader(Constant.HEADER_STRING) String auth,
+                                                  @RequestBody PaymentVariationPayload payload) {
 
+        Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+        statisticsService.checkPermission(userId, payload.getDepartmentId());
+
+        var result = statisticsService.paymentVariation(payload.getDepartmentId(), payload.getStartTime(), payload.getEndTime());
+
+        return ResultBean.success(result);
+    }
+
+    // 图五
     @GetMapping(value="/location_diagram")
     @ApiOperation(value = "获取某个时间段每个省份和城市的出差次数，包括起止月份，月份格式： yyyy-MM 如：2020-01")
     @ApiResponses({
@@ -73,5 +105,6 @@ public class StatisticsController {
                 travelApplicationService.getTravelTimes(uid, departmentId, startTime, endTime);
         return ResultBean.success(provinceAndTimesResponses);
     }
+
 
 }

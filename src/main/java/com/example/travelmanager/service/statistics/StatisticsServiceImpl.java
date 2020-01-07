@@ -7,6 +7,7 @@ import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.response.statistics.MoneyDatePair;
 import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
+import com.example.travelmanager.response.statistics.PaymentVariationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,13 +55,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     }
 
+
+
     @Override
     public PayBudgetDiffDiagram payBudgetDiff(Integer departmentId, String startTime, String endTime) {
 
         PayBudgetDiffDiagram diagram = new PayBudgetDiffDiagram();
-
-        List<String> types =  new ArrayList<String>();
-        types.add("food"); types.add("other"); types.add("hotel"); types.add("vehicle");
 
         // foodPayment
         List<MoneyDatePair> foodPaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "food_payment", "payment_application");
@@ -134,6 +134,20 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         return diagram;
+    }
+
+    @Override
+    public PaymentVariationResponse paymentVariation(Integer departmentId, String startTime, String endTime) {
+        PaymentVariationResponse response = new PaymentVariationResponse();
+
+        List<MoneyDatePair> dataList = statisticsRepo.listAllMoneyDatePair(departmentId, "payment_application");
+        for (MoneyDatePair pair:dataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                response.getDataList().add(pair);
+            }
+        }
+
+        return response;
     }
 
     private Boolean timeCompare(String time, String startTime, String endTime) {
