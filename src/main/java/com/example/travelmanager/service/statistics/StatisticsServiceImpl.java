@@ -6,10 +6,7 @@ import com.example.travelmanager.dao.StatisticsDao;
 import com.example.travelmanager.dao.StatisticsRepo;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.enums.UserRoleEnum;
-import com.example.travelmanager.response.statistics.DepartmentCost;
-import com.example.travelmanager.response.statistics.MoneyDatePair;
-import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
-import com.example.travelmanager.response.statistics.PaymentVariationResponse;
+import com.example.travelmanager.response.statistics.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -142,6 +139,21 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         return diagram;
+    }
+
+    @Override
+    public PaymentPercentResponse paymentPercent(Integer userId, String date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM");
+        Date time;
+        try {
+            time = formatter.parse(date);
+        }
+        catch (Exception e) {
+            throw StatisticsControllerException.DateStringFormatErrorException;
+        }
+
+        PaymentPercentResponse response = statisticsRepo.getMyPayPercent(userId, date);
+        return response;
     }
 
     @Override

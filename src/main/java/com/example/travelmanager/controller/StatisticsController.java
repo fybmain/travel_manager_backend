@@ -7,6 +7,7 @@ import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.statistics.PayBudgetDiffPayload;
 import com.example.travelmanager.payload.statistics.PaymentVariationPayload;
 import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
+import com.example.travelmanager.response.statistics.PaymentPercentResponse;
 import com.example.travelmanager.response.statistics.PaymentVariationResponse;
 import com.example.travelmanager.response.statistics.DepartmentCost;
 import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
@@ -42,7 +43,7 @@ public class StatisticsController {
     @ApiOperation(value = "获取某个部门或全部部门的实际支出与预算信息。包括各项以及总共(all)的。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PayBudgetDiffDiagram.class),
-            @ApiResponse(code = 400, message = "\"table name error\""),
+            @ApiResponse(code = 500, message = "{code=2003 msg='后台内部sql中tablename错误（前端不用处理这个'}"),
             @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
             @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")
 
@@ -65,12 +66,30 @@ public class StatisticsController {
         return ResultBean.success(result);
     }
 
+    // 图二个人各项费用比例
+
+    @ApiOperation(value = "获取用户某个月的各项支出。time 格式 2020-01")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PaymentPercentResponse.class),
+            @ApiResponse(code = 400, message = "{code=1004, msg='日期字符串格式错误，正确格式：yyyy-MM 如：2020-01'}", response = ResultBean.class),
+            @ApiResponse(code = 500, message = "{code=2004 msg=sql execute error}"),
+    })
+    @GetMapping("/payment_percent_diagram")
+    @ResponseBody
+    public ResponseEntity paymentPercent(@RequestHeader(Constant.HEADER_STRING) String auth,
+                                         @RequestParam String time) {
+        Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+
+        PaymentPercentResponse response = statisticsService.paymentPercent(userId, time);
+        return ResultBean.success(response);
+    }
+
     // 图三
     // 基于图一的API，只返回每月总的Payment就可以了
     @ApiOperation(value = "获取某个部门或全部部门的总的月度实际支出。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PaymentVariationResponse.class),
-            @ApiResponse(code = 400, message = "\"table name error\""),
+            @ApiResponse(code = 500, message = "{code=2003 msg='后台内部sql中table name错误（前端不用处理这个'}"),
             @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
             @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")
 
