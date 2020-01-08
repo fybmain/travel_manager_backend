@@ -14,6 +14,8 @@ public class Constant {
 
     public static final String managerDepartmentName = "总裁办";
 
+    public static final String serverDomain = "travel-manager.chinaeast.cloudapp.chinacloudapi.cn";
+
     private static final HashSet<Integer> APPLICATION_USER_UNFINISHED = new HashSet<Integer>(Arrays.asList(
             ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus(),
             ApplicationStatusEnum.NeedManagerApprove.getStatus())

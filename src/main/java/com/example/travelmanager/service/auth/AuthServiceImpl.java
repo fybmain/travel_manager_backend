@@ -20,6 +20,7 @@ import com.example.travelmanager.response.TokenResponse;
 import com.example.travelmanager.service.email.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -162,8 +163,11 @@ public class AuthServiceImpl implements AuthService {
         userDao.save(user);
     }
 
+    @Value(value = "")
+    private String serverDomain;
+
     private void sentResetPasswordEmail(User user) {
-        String url = "http://xxxx/to/path?token=" + generateApiToken(user);
+        String url = "http://" + Constant.serverDomain + "/reset-password?token=" + generateApiToken(user);
 
         String subject = "差旅报销系统-找回密码";
         String content = user.getName() + "(工号"+ user.getWorkId() + ")," + 
