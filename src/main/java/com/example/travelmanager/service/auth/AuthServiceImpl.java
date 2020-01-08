@@ -3,7 +3,6 @@ package com.example.travelmanager.service.auth;
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.AuthControllerException;
-import com.example.travelmanager.config.exception.BadRequestException;
 import com.example.travelmanager.config.exception.ForbiddenException;
 import com.example.travelmanager.config.exception.UnauthorizedException;
 import com.example.travelmanager.dao.DepartmentDao;
@@ -162,8 +161,10 @@ public class AuthServiceImpl implements AuthService {
         userDao.save(user);
     }
 
+    private String serverDomain;
+
     private void sentResetPasswordEmail(User user) {
-        String url = "http://xxxx/to/path?token=" + generateApiToken(user);
+        String url = "http://" + Constant.serverDomain + "/reset-password?token=" + generateApiToken(user);
 
         String subject = "差旅报销系统-找回密码";
         String content = user.getName() + "(工号"+ user.getWorkId() + ")," + 
