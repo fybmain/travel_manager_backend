@@ -3,7 +3,6 @@ package com.example.travelmanager.service.auth;
 import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.AuthControllerException;
-import com.example.travelmanager.config.exception.BadRequestException;
 import com.example.travelmanager.config.exception.ForbiddenException;
 import com.example.travelmanager.config.exception.UnauthorizedException;
 import com.example.travelmanager.dao.DepartmentDao;
@@ -20,7 +19,6 @@ import com.example.travelmanager.response.TokenResponse;
 import com.example.travelmanager.service.email.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -163,7 +161,6 @@ public class AuthServiceImpl implements AuthService {
         userDao.save(user);
     }
 
-    @Value(value = "")
     private String serverDomain;
 
     private void sentResetPasswordEmail(User user) {
