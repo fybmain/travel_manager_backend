@@ -147,7 +147,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void resetPasswoed(ResetPasswordPayload resetPasswordPayload) {
         ApiToken apiToken = decryptApiToken(resetPasswordPayload.getToken());
-        System.out.println(JSON.toJSONString(apiToken));
         if (apiToken == null || !apiToken.valid()){
             throw new ForbiddenException();
         }
@@ -160,8 +159,6 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(resetPasswordPayload.getNewPassword());
         userDao.save(user);
     }
-
-    private String serverDomain;
 
     private void sentResetPasswordEmail(User user) {
         String url = "http://" + Constant.serverDomain + "/reset-password?token=" + generateApiToken(user);

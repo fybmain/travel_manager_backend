@@ -30,7 +30,7 @@ public class AuthController {
     @ApiOperation(value = "获取token", response = ResultBean.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "{code=0, msg='success'}", response = TokenResponse.class),
-            @ApiResponse(code = 401, message = "{code=1003, msg='用户名或密码错误'}", response = ResultBean.class),
+            @ApiResponse(code = 403, message = "{code=1003, msg='用户名或密码错误'}", response = ResultBean.class),
             @ApiResponse(code = 423, message = "{code=1004, msg='用户不可登录'}", response = ResultBean.class)
     })
     public HttpEntity GetToken(@Validated @RequestBody LoginPayload loginPayload) {
