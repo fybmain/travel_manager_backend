@@ -17,9 +17,7 @@ import javax.validation.constraints.NotNull;
 public class User {
     @Id
     @Getter @Setter
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(nullable = false) @NotNull
-    // https://stackoverflow.com/questions/7439504/confusion-notnull-vs-columnnullable-false
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Getter @Setter
