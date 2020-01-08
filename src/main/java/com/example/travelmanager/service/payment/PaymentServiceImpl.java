@@ -329,11 +329,11 @@ public class PaymentServiceImpl implements PaymentService {
             if(u.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
                 if(approved){
                     application.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
-                    addMessage("部门经理", "同意", "报销", application.getApplicantId());
+                    addMessage("部门经理", "同意", "报销", application.getApplicantId(), applicationId);
                 }
                 else {
                     application.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
-                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId());
+                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId(), applicationId);
                 }
                 paymentApplicationDao.save(application);
             } else {
@@ -344,9 +344,9 @@ public class PaymentServiceImpl implements PaymentService {
             if(u.getRole() == UserRoleEnum.Manager.getRoleId()) {
                 if(approved) {
                     application.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
-                    addMessage("经理", "同意", "报销", application.getApplicantId());
+                    addMessage("经理", "同意", "报销", application.getApplicantId(), applicationId);
                 } else {
-                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId());
+                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId(), applicationId);
                     application.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
                 }
                 paymentApplicationDao.save(application);
@@ -365,9 +365,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
-    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId) {
+    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId, Integer resourceId) {
         Message message = new Message();
-        message.setMessage(Message.messageGenerator(checker, action, applyType));
+        message.setMessage(Message.messageGenerator(checker, action, applyType, resourceId));
         message.setReceiverId(receiverId);
         messageDao.save(message);
         return null;
