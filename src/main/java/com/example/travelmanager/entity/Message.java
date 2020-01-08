@@ -30,8 +30,8 @@ public class Message {
     @Getter @Setter
     private Integer resourceId;
 
-    public static String messageGenerator(String checker, String action, String applyType) {
-        return String.format("%s%s了你的%s申请", checker, action, applyType);
+    public static String messageGenerator(String checker, String action, String applyType, Integer resourceId) {
+        return String.format("您的%d号%s申请已被%s%s", resourceId, applyType, checker, action);
     }
 
 }

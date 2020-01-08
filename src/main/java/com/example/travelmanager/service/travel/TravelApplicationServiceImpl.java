@@ -204,11 +204,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             }
             if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
-                addMessage("部门经理", "同意", "出差", travelApplication.getApplicantId());
+                addMessage("部门经理", "同意", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             else {
                 travelApplication.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
-                addMessage("部门经理", "拒绝", "出差", travelApplication.getApplicantId());
+                addMessage("部门经理", "拒绝", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             travelApplicationDao.save(travelApplication);
         }
@@ -218,11 +218,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             }
             if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
-                addMessage("经理", "同意", "出差", travelApplication.getApplicantId());
+                addMessage("经理", "同意", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             else {
                 travelApplication.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
-                addMessage("经理", "拒绝", "出差", travelApplication.getApplicantId());
+                addMessage("经理", "拒绝", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             travelApplicationDao.save(travelApplication);
         }
@@ -329,9 +329,9 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         return provinceAndTimesResponses;
     }
 
-    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId) {
+    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId, Integer resourceId) {
         Message message = new Message();
-        message.setMessage(Message.messageGenerator(checker, action, applyType));
+        message.setMessage(Message.messageGenerator(checker, action, applyType, resourceId));
         message.setReceiverId(receiverId);
         messageDao.save(message);
         return null;
