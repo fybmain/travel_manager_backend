@@ -19,7 +19,7 @@ public class AuthControllerException extends ErrorException {
     private static final Integer workIdOrPasswordError = 1003;
     private static final String workIdOrPasswordErrorMsg = "用户名或密码错误";
     public static final AuthControllerException workIdOrPasswordErrorException = 
-        new AuthControllerException(workIdOrPasswordError, workIdOrPasswordErrorMsg, HttpStatus.UNAUTHORIZED);
+        new AuthControllerException(workIdOrPasswordError, workIdOrPasswordErrorMsg, HttpStatus.FORBIDDEN);
     
     private static final Integer notAllowedLoginError = 1004;
     private static final String notAllowedLoginErrorMsg = "用户不可登录";
