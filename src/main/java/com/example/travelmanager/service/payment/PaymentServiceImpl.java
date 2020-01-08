@@ -37,6 +37,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private DepartmentDao departmentDao;
 
+    @Autowired
+    MessageDao messageDao;
+
     @Override
     public PaymentApplication createByPayload(PaymentApplicationPayload payload, Integer userId) {
         PaymentApplication paymentApplication = new PaymentApplication();
@@ -326,9 +329,11 @@ public class PaymentServiceImpl implements PaymentService {
             if(u.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
                 if(approved){
                     application.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
+                    addMessage("部门经理", "同意", "报销", application.getApplicantId());
                 }
                 else {
                     application.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
+                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId());
                 }
                 paymentApplicationDao.save(application);
             } else {
@@ -339,7 +344,9 @@ public class PaymentServiceImpl implements PaymentService {
             if(u.getRole() == UserRoleEnum.Manager.getRoleId()) {
                 if(approved) {
                     application.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
+                    addMessage("经理", "同意", "报销", application.getApplicantId());
                 } else {
+                    addMessage("部门经理", "拒绝", "报销", application.getApplicantId());
                     application.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
                 }
                 paymentApplicationDao.save(application);
@@ -356,5 +363,13 @@ public class PaymentServiceImpl implements PaymentService {
             travelApplicationDao.save(travelApplication);
         }
 
+    }
+
+    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId) {
+        Message message = new Message();
+        message.setMessage(Message.messageGenerator(checker, action, applyType));
+        message.setReceiverId(receiverId);
+        messageDao.save(message);
+        return null;
     }
 }

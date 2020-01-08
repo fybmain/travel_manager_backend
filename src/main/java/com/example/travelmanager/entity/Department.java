@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 public class Department {
     @Id
     @Getter @Setter
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Getter @Setter

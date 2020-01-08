@@ -14,7 +14,7 @@ import java.util.Date;
 public class Picture {
     @Id
     @Getter @Setter
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Getter @Setter
