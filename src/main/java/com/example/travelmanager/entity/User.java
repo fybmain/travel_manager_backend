@@ -18,6 +18,7 @@ public class User {
     @Id
     @Getter @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // https://stackoverflow.com/questions/7439504/confusion-notnull-vs-columnnullable-false
     private Integer id;
 
     @Getter @Setter

@@ -6,10 +6,7 @@ import com.example.travelmanager.controller.bean.ResultBean;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.statistics.PayBudgetDiffPayload;
 import com.example.travelmanager.payload.statistics.PaymentVariationPayload;
-import com.example.travelmanager.response.statistics.PayBudgetDiffDiagram;
-import com.example.travelmanager.response.statistics.PaymentPercentResponse;
-import com.example.travelmanager.response.statistics.PaymentVariationResponse;
-import com.example.travelmanager.response.statistics.DepartmentCost;
+import com.example.travelmanager.response.statistics.*;
 import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
 import com.example.travelmanager.service.auth.AuthService;
 import com.example.travelmanager.service.statistics.StatisticsService;
@@ -42,7 +39,7 @@ public class StatisticsController {
     // 图一
     @ApiOperation(value = "获取某个部门或全部部门的实际支出与预算信息。包括各项以及总共(all)的。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PayBudgetDiffDiagram.class),
+            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PayBudgetDiffResponse.class),
             @ApiResponse(code = 500, message = "{code=2003 msg='后台内部sql中tablename错误（前端不用处理这个'}"),
             @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
             @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")

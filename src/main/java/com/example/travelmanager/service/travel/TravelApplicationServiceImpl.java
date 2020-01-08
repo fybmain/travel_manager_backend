@@ -4,9 +4,11 @@ import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.BadRequestException;
 import com.example.travelmanager.config.exception.TravelControllerException;
 import com.example.travelmanager.dao.DepartmentDao;
+import com.example.travelmanager.dao.MessageDao;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
 import com.example.travelmanager.entity.Department;
+import com.example.travelmanager.entity.Message;
 import com.example.travelmanager.entity.TravelApplication;
 import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
@@ -39,6 +41,9 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    MessageDao messageDao;
 
     @Override
     public TravelApplicationsResponse getTravelUnpaidApplication(int uid, int page, int size) {
@@ -199,9 +204,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             }
             if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.NeedManagerApprove.getStatus());
+                addMessage("部门经理", "同意", "出差", travelApplication.getApplicantId());
             }
             else {
                 travelApplication.setStatus(ApplicationStatusEnum.DepartmentManagerNotApproved.getStatus());
+                addMessage("部门经理", "拒绝", "出差", travelApplication.getApplicantId());
             }
             travelApplicationDao.save(travelApplication);
         }
@@ -211,9 +218,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             }
             if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
+                addMessage("经理", "同意", "出差", travelApplication.getApplicantId());
             }
             else {
                 travelApplication.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
+                addMessage("经理", "拒绝", "出差", travelApplication.getApplicantId());
             }
             travelApplicationDao.save(travelApplication);
         }
@@ -318,5 +327,13 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         }
         provinceAndTimesResponses.sort(Comparator.comparing(ProvinceAndTimesResponse::getCount).reversed());
         return provinceAndTimesResponses;
+    }
+
+    public Boolean addMessage(String checker, String action, String applyType, Integer receiverId) {
+        Message message = new Message();
+        message.setMessage(Message.messageGenerator(checker, action, applyType));
+        message.setReceiverId(receiverId);
+        messageDao.save(message);
+        return null;
     }
 }

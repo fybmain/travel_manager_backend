@@ -60,85 +60,134 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     }
 
+/*
+
+{
+    food:{
+        "budget": [1,2,3,4,5,6,7,8,9,10,11,12],
+        "payment": [1,2,3,4,5,6,7,8,9,10,11,12],
+    },
+    "vehicle": {
+        ""
+    },
+    "hotel": {
+
+    },
+    "other": {
+
+    },
+    "all": {
+
+    }
+}                       ]
+
+* */
 
 
     @Override
-    public PayBudgetDiffDiagram payBudgetDiff(Integer departmentId, String startTime, String endTime) {
+    public PayBudgetDiffResponse payBudgetDiff(Integer departmentId, String startTime, String endTime) {
 
         PayBudgetDiffDiagram diagram = new PayBudgetDiffDiagram();
 
-        // foodPayment
+
+        PayBudgetDiffResponse response = new PayBudgetDiffResponse();
+        // food
+
+        // payment
         List<MoneyDatePair> foodPaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "food_payment", "payment_application");
         for(MoneyDatePair pair:foodPaymentDataList) {
             if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getFoodPaymentDataList().add(pair);
+                // 时间ok
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getFood().getPayment().add(moneyInt);
+            }
+        }
+
+        // budget
+        List<MoneyDatePair> foodBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "food_budget", "travel_application");
+        for (MoneyDatePair pair:foodBudgetDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getFood().getBudget().add(moneyInt);
             }
         }
 
         List<MoneyDatePair> otherPaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "other_payment", "payment_application");
         for(MoneyDatePair pair:otherPaymentDataList) {
             if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getOtherPaymentDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> vehiclePaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "vehicle_payment", "payment_application");
-        for(MoneyDatePair pair:vehiclePaymentDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getVehiclePaymentDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> hotelPaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "hotel_payment", "payment_application");
-        for (MoneyDatePair pair:hotelPaymentDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getHotelPaymentDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> allPaymentDataList = statisticsRepo.listAllMoneyDatePair(departmentId, "payment_application");
-        for(MoneyDatePair pair:allPaymentDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getAllPaymentDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> foodBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "food_budget", "travel_application");
-        for (MoneyDatePair pair:foodBudgetDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getFoodBudgetDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> hotelBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "hotel_budget", "travel_application");
-        for (MoneyDatePair pair:hotelBudgetDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getHotelBudgetDataList().add(pair);
-            }
-        }
-
-        List<MoneyDatePair> vehicleBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "vehicle_budget", "travel_application");
-        for (MoneyDatePair pair:vehicleBudgetDataList) {
-            if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getVehicleBudgetDataList().add(pair);
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getOther().getPayment().add(moneyInt);
             }
         }
 
         List<MoneyDatePair> otherBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "other_budget", "travel_application");
         for (MoneyDatePair pair:otherBudgetDataList) {
             if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getOtherBudgetDataList().add(pair);
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getOther().getBudget().add(moneyInt);
+            }
+        }
+
+
+        List<MoneyDatePair> vehiclePaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "vehicle_payment", "payment_application");
+        for(MoneyDatePair pair:vehiclePaymentDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getVehicle().getPayment().add(moneyInt);
+            }
+        }
+
+        List<MoneyDatePair> vehicleBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "vehicle_budget", "travel_application");
+        for (MoneyDatePair pair:vehicleBudgetDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getVehicle().getBudget().add(moneyInt);
+            }
+        }
+
+        List<MoneyDatePair> hotelPaymentDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "hotel_payment", "payment_application");
+        for (MoneyDatePair pair:hotelPaymentDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getHotel().getPayment().add(moneyInt);
+            }
+        }
+
+        List<MoneyDatePair> hotelBudgetDataList = statisticsRepo.listOneMoneyDatePair(departmentId, "hotel_budget", "travel_application");
+        for (MoneyDatePair pair:hotelBudgetDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getHotel().getBudget().add(moneyInt);
+            }
+        }
+
+        List<MoneyDatePair> allPaymentDataList = statisticsRepo.listAllMoneyDatePair(departmentId, "payment_application");
+        for(MoneyDatePair pair:allPaymentDataList) {
+            if(timeCompare(pair.getDateString(), startTime, endTime)) {
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getAll().getPayment().add(moneyInt);
             }
         }
 
         List<MoneyDatePair> allBudgetDataList = statisticsRepo.listAllMoneyDatePair(departmentId, "travel_application");
         for(MoneyDatePair pair:allBudgetDataList) {
             if(timeCompare(pair.getDateString(), startTime, endTime)) {
-                diagram.getAllBudgetDataList().add(pair);
+                double money = pair.getMoney();
+                int moneyInt = (int) money;
+                response.getAll().getBudget().add(moneyInt);
             }
         }
 
-        return diagram;
+        return response;
     }
 
     @Override
