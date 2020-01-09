@@ -49,8 +49,9 @@ public class TestController {
         return ResultBean.success(departmentCosts);
     }
 
-    @GetMapping(value="/test2")
-    public HttpEntity test2() {
+
+    @GetMapping(value="/testpush")
+    public HttpEntity test3() {
 
         List<Object[]> departmentCosts = null;
         return ResultBean.success(departmentCosts);
