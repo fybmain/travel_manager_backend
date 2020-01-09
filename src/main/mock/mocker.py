@@ -27,7 +27,11 @@ class Mocker:
         return ids[0]
 
     def insert_user(self, department_id, role):
-        nid = self.get_next_id("user")+1
+        if self.get_next_id("user") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("user")+1
+
         fake_workid = str(random.randint(100000000, 999999999))
         fake_email = fake_workid + "@" + "qq.com"
 
@@ -53,7 +57,11 @@ class Mocker:
         self.conn.commit()
 
     def insert_department(self, manager_id, department_name):
-        nid = self.get_next_id("department")+1
+        if self.get_next_id("department") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("department")+1
+
         department_name = "MOCK" + department_name
 
         sql = "INSERT INTO department (id, manager_id, name) VALUES ({}, {}, '{}')".format(nid, manager_id, department_name)
@@ -73,7 +81,10 @@ class Mocker:
 
     # NO USE
     def insert_picture(self, url):
-        nid = self.get_next_id("picture")+1
+        if self.get_next_id("picture") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("picture")+1
         time = "2016-01-01"
 
         sql = "INSERT INTO picture (id, upload_time, url) VALUES ({}, '{}', '{}')".format(nid, time, url)
@@ -85,7 +96,11 @@ class Mocker:
         return nid
 
     def insert_payment(self, applicant_id, department_id, pics, status, travel_id):
-        nid = self.get_next_id("payment_application")+1
+        if self.get_next_id("payment_application") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("payment_application")+1
+
         month = random.randint(1, 12)
         monthStr = ""
         if month < 10:
@@ -113,15 +128,15 @@ class Mocker:
 
     def insert_travel(self, applicant_id, department_id, status, paid):
         dict= {
-            '河北省': ['石家庄','唐山','秦皇岛','承德'],
-            '山东省': ['济南','青岛','临沂','淄博'],
-            '湖南省': ['长沙','衡阳','湘潭','邵阳','岳阳','株洲'],
-            '湖北省': ['武汉', '襄阳', '黄冈', '宜昌'],
-            '江西省': ['南昌','九江','上饶','景德镇'],
-            '北京市': ['北京'],
-            '上海市': ['上海'],
-            '重庆市': ['重庆'],
-            '广东省': ['广州', '深圳'],
+            '河北': ['石家庄','唐山','秦皇岛','承德'],
+            '山东': ['济南','青岛','临沂','淄博'],
+            '湖南': ['长沙','衡阳','湘潭','邵阳','岳阳','株洲'],
+            '湖北': ['武汉', '襄阳', '黄冈', '宜昌'],
+            '江西': ['南昌','九江','上饶','景德镇'],
+            '北京': ['北京'],
+            '上海': ['上海'],
+            '重庆': ['重庆'],
+            '广东': ['广州', '深圳'],
 
         }
         province = list(dict.keys())[(random.randint(0, len(dict.keys())-1))]
@@ -136,7 +151,11 @@ class Mocker:
         reason = reasons[random.randint(0, len(reasons)-1)]
         reason = "MOCK" + reason
 
-        nid = self.get_next_id("travel_application")+1
+        if self.get_next_id("travel_application") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("travel_application")+1
+
         time_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         food = random.randint(10, 100)
