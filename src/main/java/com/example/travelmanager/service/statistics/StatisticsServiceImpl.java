@@ -87,8 +87,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public PayBudgetDiffResponse payBudgetDiff(Integer departmentId, String startTime, String endTime) {
 
-        PayBudgetDiffDiagram diagram = new PayBudgetDiffDiagram();
-
 
         PayBudgetDiffResponse response = new PayBudgetDiffResponse();
         // food
@@ -203,6 +201,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         PaymentPercentResponse response = statisticsRepo.getMyPayPercent(userId, date);
         return response;
+    }
+
+    @Override
+    public PaymentPercentResponse paymentPercentDepartment(String date, Integer departmentId) {
+
+        return null;
     }
 
     @Override

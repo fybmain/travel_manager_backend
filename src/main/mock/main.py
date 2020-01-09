@@ -55,7 +55,7 @@ def main():
     for d in departs:
         depart_manager_id = mocker.insert_user(0, UserRole.DepartmentManager)
         department_id = mocker.insert_department(depart_manager_id, d)
-        mocker.update_user_department_id(department_id, manager_id)
+        mocker.update_user_department_id(department_id, depart_manager_id)
 
         user_cnt = random.randint(30, 50)
         for i in range(user_cnt):
@@ -81,7 +81,7 @@ def main():
                 if paid:
                     can_pay_travel_id_list.append(tid)
 
-            """
+
             # 为这些travel创建payment
             for tid in can_pay_travel_id_list:
                 pics = "https://picturesbed.oss-cn-hangzhou.aliyuncs.com/travelmanager/0520201254220450945697959433.png"
@@ -97,7 +97,6 @@ def main():
 
                 mocker.insert_payment(uid, department_id, pics, status, tid)
 
-            """
 
 if __name__ == '__main__':
     main()

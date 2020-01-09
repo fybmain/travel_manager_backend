@@ -42,11 +42,12 @@ public class TestController {
         //return ResultBean.success();
     }
 
-    @GetMapping(value="test")
+    @GetMapping(value="/test")
     public HttpEntity test() {
         
         List<Object[]> departmentCosts = null;
         return ResultBean.success(departmentCosts);
     }
+
     
 }

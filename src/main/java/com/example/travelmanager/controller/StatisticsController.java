@@ -3,6 +3,8 @@ package com.example.travelmanager.controller;
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
+import com.example.travelmanager.dao.UserDao;
+import com.example.travelmanager.entity.User;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.statistics.PayBudgetDiffPayload;
 import com.example.travelmanager.payload.statistics.PaymentVariationPayload;
@@ -15,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,9 @@ public class StatisticsController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private TravelApplicationService travelApplicationService;
@@ -54,6 +60,11 @@ public class StatisticsController {
         // 1. 验证token
         Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
+        User user = userDao.findById(userId).get();
+        if(user.getRole().equals(UserRoleEnum.DepartmentManager.getRoleId())) {
+            payload.setDepartmentId(user.getDepartmentId());
+        }
+
         // 2. checkPermission
         statisticsService.checkPermission(userId, payload.getDepartmentId());
 
@@ -71,13 +82,32 @@ public class StatisticsController {
             @ApiResponse(code = 400, message = "{code=1004, msg='日期字符串格式错误，正确格式：yyyy-MM 如：2020-01'}", response = ResultBean.class),
             @ApiResponse(code = 500, message = "{code=2004 msg=sql execute error}"),
     })
-    @GetMapping("/payment_percent_diagram")
+    @GetMapping("/payment_percent_diagram/me")
     @ResponseBody
     public ResponseEntity paymentPercent(@RequestHeader(Constant.HEADER_STRING) String auth,
                                          @RequestParam String time) {
         Integer userId = authService.authorize(auth, UserRoleEnum.Employee, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
         PaymentPercentResponse response = statisticsService.paymentPercent(userId, time);
+        return ResultBean.success(response);
+    }
+
+
+    @ApiOperation(value = "获取某个部门或全部部门的实际支出与预算信息。包括各项以及总共(all)的。 departmentId=-1时为全部门. startTime endTime 格式 2020-01")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "{code=0, msg='' data如下}", response = PayBudgetDiffResponse.class),
+            @ApiResponse(code = 403, message = "{code=1003, msg = \"user don't have enough permission to request this API\"}"),
+            @ApiResponse(code = 404, message = "{code=1001 msg = \"request user not found in database\"}  {code=1002, msg= \"request department not found in database\"}")
+    })
+    @GetMapping("/payment_percent_diagram/department")
+    public ResponseEntity paymentPercentDepartment(@RequestHeader(Constant.HEADER_STRING) String auth,
+                                         @RequestParam String time, @RequestParam Integer departmentId) {
+
+        Integer userId = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
+
+        statisticsService.checkPermission(userId, departmentId);
+
+        PaymentPercentResponse response = statisticsService.paymentPercentDepartment(time, departmentId);
         return ResultBean.success(response);
     }
 
