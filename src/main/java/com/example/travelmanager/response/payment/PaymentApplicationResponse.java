@@ -42,6 +42,9 @@ public class PaymentApplicationResponse {
     private Integer travelApplyId;
 
     @Setter @Getter
+    private Integer status;
+
+    @Setter @Getter
     private Budget budget;
 
     @Setter @Getter
