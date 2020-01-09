@@ -49,5 +49,10 @@ public class TestController {
         return ResultBean.success(departmentCosts);
     }
 
-    
+    @GetMapping(value="/test2")
+    public HttpEntity test2() {
+
+        List<Object[]> departmentCosts = null;
+        return ResultBean.success(departmentCosts);
+    }
 }
