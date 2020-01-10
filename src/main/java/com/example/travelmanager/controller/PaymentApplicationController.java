@@ -2,7 +2,6 @@ package com.example.travelmanager.controller;
 
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.controller.bean.ResultBean;
-import com.example.travelmanager.dao.PaymentApplicationDao;
 import com.example.travelmanager.entity.PaymentApplication;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.ApprovalPayload;
@@ -151,7 +150,7 @@ public class PaymentApplicationController {
                                  @Validated @RequestBody ApprovalPayload approvalPayload) {
         Integer uid = authService.authorize(auth, UserRoleEnum.DepartmentManager, UserRoleEnum.Manager);
 
-        paymentService.approve(uid, approvalPayload.getApplyId(), approvalPayload.getApproved());
+        paymentService.approve(uid, approvalPayload.getApplyId(), approvalPayload.getApproved(), approvalPayload.getComment());
 
         return ResultBean.success();
     }

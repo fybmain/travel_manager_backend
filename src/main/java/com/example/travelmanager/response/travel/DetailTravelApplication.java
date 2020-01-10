@@ -50,6 +50,9 @@ public class DetailTravelApplication {
     private String city;
 
     @Getter @Setter
+    private String detailAddress;
+
+    @Getter @Setter
     private String reason;
 
     @Getter @Setter
@@ -64,4 +67,6 @@ public class DetailTravelApplication {
     @Getter @Setter
     private float otherBudget;
 
+    @Getter @Setter
+    private String comment;
 }

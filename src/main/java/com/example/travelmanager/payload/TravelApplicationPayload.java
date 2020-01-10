@@ -39,6 +39,9 @@ public class TravelApplicationPayload {
     @NotBlank(message = "city should not ne blank")
     private String city;
 
+    @Getter @Setter
+    private String detailAddress;
+
     @Getter
     @Setter
     @ApiModelProperty

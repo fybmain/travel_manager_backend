@@ -201,8 +201,10 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         detailTravelApplication.setReason(application.getReason());
         detailTravelApplication.setProvince(application.getProvince());
         detailTravelApplication.setCity(application.getCity());
+        detailTravelApplication.setDetailAddress(application.getDetailAddress());
 
         detailTravelApplication.setStatus(application.getStatus());
+        detailTravelApplication.setComment(application.getComment());
         
 
         TravelApplication travelApplication = query.get();
@@ -226,7 +228,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         if (query.isEmpty()) {
             throw TravelControllerException.TravelApplicationNotFoundException;
         }
+
         TravelApplication travelApplication = query.get();
+        //set comment
+        String comment = approvalPayload.getComment();
+        travelApplication.setComment(comment != null? comment : "");
         if (travelApplication.getStatus() == ApplicationStatusEnum.NeedDepartmentManagerApprove.getStatus()) {
             if (user.getRole() != UserRoleEnum.DepartmentManager.getRoleId() || user.getDepartmentId() != travelApplication.getDepartmentId()) {
                 throw TravelControllerException.TravelApplicationForbiddenException;
@@ -269,6 +275,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         travelApplication.setEndTime(travelApplicationPayload.getEndTime());
         travelApplication.setProvince(travelApplicationPayload.getProvince());
         travelApplication.setCity(travelApplicationPayload.getCity());
+        travelApplication.setDetailAddress(travelApplicationPayload.getDetailAddress());
         travelApplication.setDepartmentId(user.getDepartmentId());
         travelApplication.setFoodBudget(travelApplicationPayload.getBudget().getFood());
         travelApplication.setHotelBudget(travelApplicationPayload.getBudget().getHotel());

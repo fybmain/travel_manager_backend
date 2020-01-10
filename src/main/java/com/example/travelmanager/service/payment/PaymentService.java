@@ -17,5 +17,6 @@ public interface PaymentService {
 
     HomePageResponse listHomePageApplications(Integer userId, Integer size);
 
-    void approve(Integer userId, Integer applicationId, Boolean approved);
+    void approve(Integer userId, Integer applicationId, Boolean approved, String comment);
+
 }
