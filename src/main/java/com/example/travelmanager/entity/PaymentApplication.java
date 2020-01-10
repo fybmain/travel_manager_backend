@@ -55,4 +55,6 @@ public class PaymentApplication {
     @Getter @Setter
     private float otherPayment;
 
+    @Getter @Setter
+    private String comment;
 }

@@ -49,4 +49,10 @@ public class PaymentApplicationResponse {
 
     @Setter @Getter
     private Payment payment;
+
+    @Getter @Setter
+    private String comment;
+
+    @Getter @Setter
+    private String department;
 }
