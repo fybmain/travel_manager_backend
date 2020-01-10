@@ -1,5 +1,6 @@
 package com.example.travelmanager.service.travel;
 
+import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.BadRequestException;
 import com.example.travelmanager.config.exception.TravelControllerException;
@@ -7,14 +8,13 @@ import com.example.travelmanager.dao.DepartmentDao;
 import com.example.travelmanager.dao.MessageDao;
 import com.example.travelmanager.dao.TravelApplicationDao;
 import com.example.travelmanager.dao.UserDao;
-import com.example.travelmanager.entity.Department;
-import com.example.travelmanager.entity.Message;
-import com.example.travelmanager.entity.TravelApplication;
-import com.example.travelmanager.entity.User;
+import com.example.travelmanager.entity.*;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.payload.ApprovalPayload;
+import com.example.travelmanager.response.homepage.ApplicationInfoHomePage;
+import com.example.travelmanager.response.homepage.HomePageResponse;
 import com.example.travelmanager.response.travel.CityAndTimes;
 import com.example.travelmanager.response.travel.DetailTravelApplication;
 import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
@@ -51,6 +51,35 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
         Page<TravelApplication> travelApplications = travelApplicationDao.findAllUnpaid(uid, pageable);
         return pageApplications(travelApplications);
+    }
+
+    @Override
+    public HomePageResponse listHomePageApplications(Integer userId, Integer size) {
+        String state = "unfinished";
+        Set<Integer> statusSet = Constant.getStatusSet(state, UserRoleEnum.Employee.getRoleId());
+        if(statusSet == null) {
+            throw TravelControllerException.GetApplicationsStateErrorException;
+        }
+
+        HomePageResponse response = new HomePageResponse();
+        response.setItems(new ArrayList<ApplicationInfoHomePage>());
+
+        // 分页相关实例
+        Pageable pageable = PageRequest.of(0, size, Sort.Direction.DESC, "id");
+        Page<TravelApplication> travels;
+        travels = travelApplicationDao.finaAllByApplicantIdAndStatus(userId, statusSet, pageable);
+
+        for(TravelApplication t:travels) {
+            ApplicationInfoHomePage app = new ApplicationInfoHomePage();
+            app.setApplyTime(t.getApplyTime());
+            app.setApplyId(t.getId());
+            app.setStatus(t.getStatus());
+            Double money = (double) (t.getHotelBudget() + t.getFoodBudget() + t.getVehicleBudget() + t.getOtherBudget());
+            app.setMoney(money);
+
+            response.getItems().add(app);
+        }
+        return response;
     }
 
     @Override
@@ -93,7 +122,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id");
 
-        Page<TravelApplication> travelApplications = travelApplicationDao.finaAllByApplicantId(uid, statusSet, pageable);
+        Page<TravelApplication> travelApplications = travelApplicationDao.finaAllByApplicantIdAndStatus(uid, statusSet, pageable);
 
         return pageApplications(travelApplications);
     }

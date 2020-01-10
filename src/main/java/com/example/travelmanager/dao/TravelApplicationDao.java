@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface TravelApplicationDao extends CrudRepository<TravelApplication, Integer> , JpaSpecificationExecutor<TravelApplication> {
     @Query("select t from TravelApplication t where t.applicantId = :uid and t.status in :statusSet")
-    Page<TravelApplication> finaAllByApplicantId(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
+    Page<TravelApplication> finaAllByApplicantIdAndStatus(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 
     @Query("select t from TravelApplication t where t.departmentId = :departmentId and t.status in :statusSet")
     Page<TravelApplication> findAllByDepartmentIdAndStatus(@Param("departmentId") int departmentId, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);

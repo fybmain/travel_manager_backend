@@ -1,6 +1,5 @@
 package com.example.travelmanager.service.payment;
 
-import com.alibaba.fastjson.JSON;
 import com.example.travelmanager.config.Constant;
 import com.example.travelmanager.config.exception.PaymentControllerException;
 import com.example.travelmanager.dao.*;
@@ -8,6 +7,8 @@ import com.example.travelmanager.entity.*;
 import com.example.travelmanager.enums.ApplicationStatusEnum;
 import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.PaymentApplicationPayload;
+import com.example.travelmanager.response.homepage.ApplicationInfoHomePage;
+import com.example.travelmanager.response.homepage.HomePageResponse;
 import com.example.travelmanager.response.payment.PaymentApplicationResponse;
 import com.example.travelmanager.response.payment.SimplePayment;
 import com.example.travelmanager.response.payment.SimplePaymentListResponse;
@@ -280,7 +281,7 @@ public class PaymentServiceImpl implements PaymentService {
         // 分页相关实例
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.Direction.DESC, "id");
         Page<PaymentApplication> payments;
-        payments = paymentApplicationDao.findAllByApplicantId(userId, statusSet, pageable);
+        payments = paymentApplicationDao.findAllByApplicantIdAndStatus(userId, statusSet, pageable);
 
         // 设置总数
         response.setTotal((int) payments.getTotalElements());
@@ -310,6 +311,37 @@ public class PaymentServiceImpl implements PaymentService {
 
         return response;
     }
+
+    @Override
+    public HomePageResponse listHomePageApplications(Integer userId, Integer size) {
+        String state = "unfinished";
+        Set<Integer> statusSet = Constant.getStatusSet(state, UserRoleEnum.Employee.getRoleId());
+        if(statusSet == null) {
+            throw PaymentControllerException.StateParamErrorException;
+        }
+
+        HomePageResponse response = new HomePageResponse();
+        response.setItems(new ArrayList<ApplicationInfoHomePage>());
+
+        // 分页相关实例
+        Pageable pageable = PageRequest.of(0, size, Sort.Direction.DESC, "id");
+        Page<PaymentApplication> payments;
+        payments = paymentApplicationDao.findAllByApplicantIdAndStatus(userId, statusSet, pageable);
+
+        for(PaymentApplication p:payments) {
+            ApplicationInfoHomePage app = new ApplicationInfoHomePage();
+            app.setApplyTime(p.getApplyTime());
+            app.setApplyId(p.getId());
+            app.setStatus(p.getStatus());
+            Double money = (double) (p.getHotelPayment() + p.getFoodPayment() + p.getVehiclePayment() + p.getOtherPayment());
+            app.setMoney(money);
+
+            response.getItems().add(app);
+        }
+
+        return response;
+    }
+
 
     public void approve(Integer userId, Integer applicationId, Boolean approved, String comment) {
         User u = userDao.findById(userId).get();
