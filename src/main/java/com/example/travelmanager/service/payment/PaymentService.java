@@ -14,5 +14,5 @@ public interface PaymentService {
 
     SimplePaymentListResponse listMyApplications(Integer userId, Integer pageSize, Integer pageNum, String state);
 
-    void approve(Integer userId, Integer applicationId, Boolean approved);
+    void approve(Integer userId, Integer applicationId, Boolean approved, String comment);
 }

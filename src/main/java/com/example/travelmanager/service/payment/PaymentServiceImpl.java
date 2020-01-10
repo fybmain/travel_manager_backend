@@ -154,8 +154,12 @@ public class PaymentServiceImpl implements PaymentService {
         }
         TravelApplication travelApplication = queryTemp3.get();
 
+        //get department
+        var departmentQuery = departmentDao.findById(travelApplication.getDepartmentId());
+        String department = departmentQuery.isEmpty() ? "未知部门" : departmentQuery.get().getName();
 
         PaymentApplicationResponse response = new PaymentApplicationResponse();
+
         response.setPayment(new PaymentApplicationResponse.Payment());
         response.setBudget(new PaymentApplicationResponse.Budget());
 
@@ -166,6 +170,10 @@ public class PaymentServiceImpl implements PaymentService {
         response.setTravelApplyId(paymentApplication.getTravelId());
 
         response.setStatus(paymentApplication.getStatus());
+        
+        response.setComment(paymentApplication.getComment());
+
+        response.setDepartment(department);
 
         response.getPayment().setFood(paymentApplication.getFoodPayment());
         response.getPayment().setHotel(paymentApplication.getHotelPayment());

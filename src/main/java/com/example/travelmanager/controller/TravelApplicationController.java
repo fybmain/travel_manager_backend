@@ -8,7 +8,6 @@ import com.example.travelmanager.enums.UserRoleEnum;
 import com.example.travelmanager.payload.ApprovalPayload;
 import com.example.travelmanager.payload.TravelApplicationPayload;
 import com.example.travelmanager.response.travel.DetailTravelApplication;
-import com.example.travelmanager.response.travel.ProvinceAndTimesResponse;
 import com.example.travelmanager.response.travel.TravelApplicationsResponse;
 import com.example.travelmanager.service.travel.TravelApplicationService;
 import com.example.travelmanager.service.auth.AuthService;
