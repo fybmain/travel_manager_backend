@@ -50,6 +50,8 @@ def main():
     department_id = mocker.insert_department(manager_id, "总办")
     mocker.update_user_department_id(department_id, manager_id)
 
+
+
     # 5个部门
     departs = ["云计算事业部", "物联网事业部", "互动娱乐事业部", "网络媒体事业部", "广告事业部"]
     for d in departs:
@@ -81,22 +83,59 @@ def main():
                 if paid:
                     can_pay_travel_id_list.append(tid)
 
-
             # 为这些travel创建payment
             for tid in can_pay_travel_id_list:
                 pics = "https://picturesbed.oss-cn-hangzhou.aliyuncs.com/travelmanager/0520201254220450945697959433.png"
                 status_rand = random.randint(1, 100)
                 status = ApplicationStatus.ApplicationApproved
                 # status 70% is approved. 10% is unapproved  10%is 总经理审批  10% is 部门经理审批
+
+
                 if 70 < status_rand <= 80:
                     status = ApplicationStatus.ApplicationNotApproved
+
                 elif 80 < status_rand <= 90:
                     status = ApplicationStatus.NeedManagerApprove
+                    msg = "您的{}号申请已被部门经理同意"
                 elif 90 < status_rand <= 100:
                     status = ApplicationStatus.NeedDepartmentManagerApprove
 
-                mocker.insert_payment(uid, department_id, pics, status, tid)
+                pid = mocker.insert_payment(uid, department_id, pics, status, tid)
+
+                msg = ""
+                if status == ApplicationStatus.ApplicationApproved:
+                    msg = "您的{}号报销申请已被总经理同意".format(pid)
+                elif status == ApplicationStatus.NeedManagerApprove:
+                    msg = "您的{}号报销申请已被部门经理同意".format(pid)
+                elif status == ApplicationStatus.ApplicationNotApproved:
+                    msg = "您的{}号报销申请已被部门经理驳回".format(pid)
+
+                if msg != "":
+                    mocker.insert_msg(msg, uid)
+
+
+
+
+def main2():
+    db = Database("travel", "997icu", "127.0.0.1", "3306", "travelmanager")
+    conn = db.init_conn()
+    mocker = Mocker(conn)
+
+    manager_id = 2
+    # 总经理
+    for i in [12, 13, 20, 21, 50]:
+        msg = "您的{}号报销申请已通过".format(i)
+        mocker.insert_msg(msg, manager_id)
+
+    dmanagersid = [3, 50, 101, 142, 182]
+
+    appids2 = [60, 72, 80, 84, 100]
+    for did in dmanagersid:
+        for aid in appids2:
+            msg = "您的{}号报销申请已被总经理同意".format(aid)
+            mocker.insert_msg(msg, did)
 
 
 if __name__ == '__main__':
     main()
+    #main2()
