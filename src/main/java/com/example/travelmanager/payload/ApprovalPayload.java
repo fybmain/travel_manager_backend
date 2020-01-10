@@ -10,10 +10,13 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ApprovalPayload {
     @Getter @Setter
-    @ApiModelProperty @NotNull
+    @NotNull
     private Boolean approved;
 
     @Getter @Setter
-    @ApiModelProperty @NotNull
+    @NotNull
     private Integer applyId;
+
+    @Getter @Setter
+    private String comment;
 }

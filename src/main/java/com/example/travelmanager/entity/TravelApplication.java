@@ -53,9 +53,11 @@ public class TravelApplication {
     @Getter @Setter
     private String province;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private String city;
+
+    @Getter @Setter
+    private String detailAddress;
 
     @Getter @Setter
     private String reason;
@@ -71,4 +73,7 @@ public class TravelApplication {
 
     @Getter @Setter
     private float otherBudget;
+
+    @Getter @Setter
+    private String comment;
 }

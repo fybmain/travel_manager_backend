@@ -302,7 +302,7 @@ public class PaymentServiceImpl implements PaymentService {
         return response;
     }
 
-    public void approve(Integer userId, Integer applicationId, Boolean approved) {
+    public void approve(Integer userId, Integer applicationId, Boolean approved, String comment) {
         User u = userDao.findById(userId).get();
 
         var applicationQuery = paymentApplicationDao.findById(applicationId);
@@ -310,6 +310,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw PaymentControllerException.PaymentApplicationNotFoundException;
         }
         PaymentApplication application = applicationQuery.get();
+        application.setComment(comment != null ? comment : "");
 
         // 查询对应travel，判断是否存在
         var travelQuery = travelApplicationDao.findById(application.getTravelId());
