@@ -246,7 +246,7 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
         travelApplication.setEndTime(travelApplicationPayload.getEndTime());
         travelApplication.setProvince(travelApplicationPayload.getProvince());
         travelApplication.setCity(travelApplicationPayload.getCity());
-        travelApplication.setDetailAddress(travelApplication.getDetailAddress());
+        travelApplication.setDetailAddress(travelApplicationPayload.getDetailAddress());
         travelApplication.setDepartmentId(user.getDepartmentId());
         travelApplication.setFoodBudget(travelApplicationPayload.getBudget().getFood());
         travelApplication.setHotelBudget(travelApplicationPayload.getBudget().getHotel());
