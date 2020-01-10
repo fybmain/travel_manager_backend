@@ -165,6 +165,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         response.setTravelApplyId(paymentApplication.getTravelId());
 
+        response.setStatus(paymentApplication.getStatus());
 
         response.getPayment().setFood(paymentApplication.getFoodPayment());
         response.getPayment().setHotel(paymentApplication.getHotelPayment());

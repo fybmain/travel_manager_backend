@@ -19,7 +19,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageResponse getMessages(Integer userId) {
-        List<Message> messages = messageDao.findAllByReceiverId(userId);
+        List<Message> messages = messageDao.findTop100AllByReceiverIdOrderByIdDesc(userId);
 
         MessageResponse response = new MessageResponse();
 
