@@ -40,7 +40,7 @@ public class TravelApplicationPayload {
     private String city;
 
     @Getter @Setter
-    private Sttring detailAddress
+    private String detailAddress;
 
     @Getter
     @Setter
