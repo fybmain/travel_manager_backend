@@ -9,6 +9,7 @@ import com.example.travelmanager.entity.PaymentApplication;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -16,7 +17,7 @@ public interface PaymentApplicationDao extends CrudRepository<PaymentApplication
                                                JpaSpecificationExecutor<PaymentApplication> {
 
     @Query("select p from PaymentApplication p where p.applicantId = :uid and p.status in :statusSet")
-    Page<PaymentApplication> findAllByApplicantId(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
+    Page<PaymentApplication> findAllByApplicantIdAndStatus(@Param("uid") int uid, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
 
     @Query("select p from PaymentApplication p where p.departmentId = :departmentId and p.status in :statusSet")
     Page<PaymentApplication> findAllByDepartmentIdAndStatus(@Param("departmentId") int departmentId, @Param("statusSet") Set<Integer>statusSet, Pageable pageable);
