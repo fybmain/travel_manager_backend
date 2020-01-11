@@ -35,7 +35,7 @@ class Mocker:
         fake_workid = str(random.randint(100000000, 999999999))
         fake_email = fake_workid + "@" + "qq.com"
 
-        fake_name = "MOCK" + full_name(last_names, first_names)
+        fake_name = full_name(last_names, first_names)
 
         fake_hash = random_string(50)
         sql = ("INSERT INTO user (id, department_id, email, name, password_hash, role, status, telephone, work_id) " \
@@ -62,7 +62,6 @@ class Mocker:
         else:
             nid = self.get_next_id("department")+1
 
-        department_name = "MOCK" + department_name
 
         sql = "INSERT INTO department (id, manager_id, name) VALUES ({}, {}, '{}')".format(nid, manager_id, department_name)
         print("SQL:", sql)
@@ -110,10 +109,10 @@ class Mocker:
 
         time_str = datetime.today().strftime("2019-" + monthStr + "-%d %H:%M:%S")
 
-        food = random.randint(10, 100)
-        hotel = random.randint(10, 100)
-        vehicle = random.randint(10, 100)
-        other = random.randint(10, 100)
+        food = random.randint(800, 2000)
+        hotel = random.randint(800, 2000)
+        vehicle = random.randint(800, 2000)
+        other = random.randint(800, 2000)
 
         sql = "INSERT INTO payment_application (id, applicant_id, apply_time, department_id, food_payment, hotel_payment, invoiceurls, other_payment, status, travel_id, vehicle_payment) " \
               "VALUES ({}, {}, '{}', {}, {}, {}, '{}', {}, {}, {}, {})"\
@@ -128,16 +127,15 @@ class Mocker:
 
     def insert_travel(self, applicant_id, department_id, status, paid):
         dict= {
-            '河北': ['石家庄','唐山','秦皇岛','承德'],
-            '山东': ['济南','青岛','临沂','淄博'],
-            '湖南': ['长沙','衡阳','湘潭','邵阳','岳阳','株洲'],
-            '湖北': ['武汉', '襄阳', '黄冈', '宜昌'],
-            '江西': ['南昌','九江','上饶','景德镇'],
-            '北京': ['北京'],
-            '上海': ['上海'],
-            '重庆': ['重庆'],
-            '广东': ['广州', '深圳'],
-
+            '河北省': ['石家庄市','唐山市','秦皇岛市','承德市'],
+            '山东省': ['济南市','青岛市','临沂市','淄博市'],
+            '湖南省': ['长沙市','衡阳市','湘潭市','邵阳市','岳阳市','株洲市'],
+            '湖北省': ['武汉市', '襄阳市', '黄冈市', '宜昌市'],
+            '江西省': ['南昌市','九江市','上饶市','景德镇市'],
+            '北京市': ['北京市'],
+            '上海市': ['上海市'],
+            '重庆省': ['重庆市'],
+            '广东省': ['广州市', '深圳市'],
         }
         province = list(dict.keys())[(random.randint(0, len(dict.keys())-1))]
         city_list = dict.get(province)
@@ -149,7 +147,6 @@ class Mocker:
                    "参加会议"]
 
         reason = reasons[random.randint(0, len(reasons)-1)]
-        reason = "MOCK" + reason
 
         if self.get_next_id("travel_application") is None:
             nid=1
@@ -158,10 +155,10 @@ class Mocker:
 
         time_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-        food = random.randint(10, 100)
-        hotel = random.randint(10, 100)
-        vehicle = random.randint(10, 100)
-        other = random.randint(10, 100)
+        food = random.randint(100, 600)
+        hotel = random.randint(100, 600)
+        vehicle = random.randint(100, 600)
+        other = random.randint(100, 600)
 
         month = random.randint(1, 12)
         monthStr = ""
@@ -188,3 +185,17 @@ class Mocker:
         self.conn.commit()
 
         return nid
+
+    def insert_msg(self, msg, uid):
+        if self.get_next_id("message") is None:
+            nid=1
+        else:
+            nid = self.get_next_id("message")+1
+
+        sql = "INSERT INTO message (id, message, receiver_id) VALUES ({}, '{}', {})".format(nid, msg, uid)
+
+        print("SQL:", sql)
+
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        self.conn.commit()

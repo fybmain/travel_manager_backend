@@ -253,11 +253,11 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
             }
             if (approvalPayload.getApproved() == true) {
                 travelApplication.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
-                addMessage("经理", "同意", "出差", travelApplication.getApplicantId(), travelApplication.getId());
+                addMessage("总经理", "同意", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             else {
                 travelApplication.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
-                addMessage("经理", "拒绝", "出差", travelApplication.getApplicantId(), travelApplication.getId());
+                addMessage("总经理", "拒绝", "出差", travelApplication.getApplicantId(), travelApplication.getId());
             }
             travelApplicationDao.save(travelApplication);
         }

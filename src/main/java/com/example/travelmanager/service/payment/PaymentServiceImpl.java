@@ -386,7 +386,7 @@ public class PaymentServiceImpl implements PaymentService {
             if(u.getRole() == UserRoleEnum.Manager.getRoleId()) {
                 if(approved) {
                     application.setStatus(ApplicationStatusEnum.ApplicationApproved.getStatus());
-                    addMessage("经理", "同意", "报销", application.getApplicantId(), applicationId);
+                    addMessage("总经理", "同意", "报销", application.getApplicantId(), applicationId);
                 } else {
                     addMessage("部门经理", "拒绝", "报销", application.getApplicantId(), applicationId);
                     application.setStatus(ApplicationStatusEnum.ManagerNotApproved.getStatus());
