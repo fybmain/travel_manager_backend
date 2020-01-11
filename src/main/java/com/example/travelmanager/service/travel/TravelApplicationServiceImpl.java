@@ -205,16 +205,16 @@ public class TravelApplicationServiceImpl implements TravelApplicationService{
 
         detailTravelApplication.setStatus(application.getStatus());
         detailTravelApplication.setComment(application.getComment());
-        
+
 
         TravelApplication travelApplication = query.get();
         if (user.getRole() == UserRoleEnum.Employee.getRoleId()) {
-            if (travelApplication.getApplicantId() != user.getId()) {
+            if (!travelApplication.getApplicantId().equals(user.getId())) {
                 throw TravelControllerException.TravelApplicationForbiddenException;
             }
         }
         else if (user.getRole() == UserRoleEnum.DepartmentManager.getRoleId()) {
-            if (travelApplication.getDepartmentId() != user.getDepartmentId()) {
+            if (!travelApplication.getDepartmentId().equals(user.getDepartmentId())) {
                 throw TravelControllerException.TravelApplicationForbiddenException;
             }
         }
